@@ -3,7 +3,7 @@ package pro.respawn.flowmvi.sample.navigation.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import org.koin.compose.ComposeContextWrapper
-import org.koin.compose.LocalKoinScope
+import org.koin.compose.LocalKoinScopeContext
 import org.koin.core.annotation.KoinInternalApi
 import pro.respawn.flowmvi.compose.dsl.LocalSubscriberLifecycle
 import pro.respawn.flowmvi.compose.dsl.rememberSubscriberLifecycle
@@ -19,6 +19,6 @@ internal fun ProvideDestinationLocals(
 ) = CompositionLocalProvider(
     LocalSubscriberLifecycle provides rememberSubscriberLifecycle(component.lifecycle) { asSubscriberLifecycle },
     LocalDestinationScope provides component,
-    LocalKoinScope provides ComposeContextWrapper(component.scope),
+    LocalKoinScopeContext provides ComposeContextWrapper(component.scope),
     content = content,
 )

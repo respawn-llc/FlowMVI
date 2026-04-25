@@ -80,13 +80,11 @@ fun Project.configureMultiplatform(
 
     sequence {
         if (iOs) {
-            yield(iosX64())
             yield(iosArm64())
             yield(iosSimulatorArm64())
         }
         if (macOs) {
             yield(macosArm64())
-            yield(macosX64())
         }
         if (tvOs) {
             yield(tvosX64())

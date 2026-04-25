@@ -75,15 +75,19 @@ open class StackComponent(
 
     suspend inline fun <reified D : Destination, reified R> subscribe(
         noinline onResult: suspend (result: R) -> Unit
-    ) = results.collectLatest { list ->
-        val matching = list.asSequence().filter { it.from is D && it.value is R }.toSet()
-        results.update { it.asSequence().minus(matching).take(MaxNavResults).toSet() }
-        matching.forEach { onResult(it.value as R) }
+    ) {
+        results.collectLatest { list ->
+            val matching = list.asSequence().filter { it.from is D && it.value is R }.toSet()
+            results.update { it.asSequence().minus(matching).take(MaxNavResults).toSet() }
+            matching.forEach { onResult(it.value as R) }
+        }
     }
 
-    inline fun popBackStack(crossinline onSuccess: () -> Unit = {}) = when {
-        stack.value.backStack.isEmpty() && !stack.value.active.configuration.topLevel -> navigate(Destination.Home)
-        else -> stackNav.pop { if (it) onSuccess() }
+    inline fun popBackStack(crossinline onSuccess: () -> Unit = {}) {
+        when {
+            stack.value.backStack.isEmpty() && !stack.value.active.configuration.topLevel -> navigate(Destination.Home)
+            else -> stackNav.pop { if (it) onSuccess() }
+        }
     }
 
     companion object {

@@ -59,7 +59,7 @@ intellijPlatform {
             // TODO: https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1965
             // props["plugin.local.ide.path"]?.toString()?.let(::local)
             create(
-                IntelliJPlatformType.IntellijIdeaCommunity,
+                IntelliJPlatformType.IntellijIdea,
                 libs.versions.intellij.idea.get()
             )
         }
@@ -133,7 +133,7 @@ dependencies {
 
     intellijPlatform {
         @Suppress("DEPRECATION") // crashes without this usage :D
-        intellijIdeaCommunity(libs.versions.intellij.idea)
+        intellijIdea(libs.versions.intellij.idea)
         pluginVerifier()
         zipSigner()
         bundledPlugin(libs.kotlin.stdlib.map(Dependency::getGroup))
