@@ -183,3 +183,4 @@ docs/javadocs/**
 /docs/.npm-cache/
 /.idea/artifacts/
 /.idea/deviceManager.xml
+/.builder/plans/
