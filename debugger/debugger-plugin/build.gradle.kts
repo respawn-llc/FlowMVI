@@ -17,6 +17,21 @@ kotlin {
         windows = false,
         wasmWasi = false,
     )
+
+    sourceSets {
+        androidMain.dependencies {
+            implementation(libs.ktor.client.engine)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.engine)
+        }
+        nativeMain.dependencies {
+            implementation(libs.ktor.client.engine)
+        }
+        webMain.dependencies {
+            implementation(libs.ktor.client.js)
+        }
+    }
 }
 
 android {
@@ -29,6 +44,5 @@ dependencies {
 
     commonMainImplementation(projects.debugger.debuggerCommon)
     commonMainImplementation(libs.bundles.ktor.client)
-    commonMainImplementation(libs.ktor.client.engine)
     commonMainImplementation(libs.bundles.serialization)
 }

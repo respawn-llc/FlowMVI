@@ -1,8 +1,6 @@
 package pro.respawn.flowmvi.debugger.plugin
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.endpoint
 import io.ktor.client.plugins.DataConversion
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
@@ -28,7 +26,7 @@ internal val DebugHttpClient: HttpClient by lazy { HttpClient(DefaultJson) }
 internal fun HttpClient(
     json: Json,
     pingInterval: Long = 5000L
-) = HttpClient(CIO) {
+) = HttpClient {
     install(WebSockets) {
         pingIntervalMillis = pingInterval
         contentConverter = KotlinxWebsocketSerializationConverter(json)
@@ -57,8 +55,4 @@ internal fun HttpClient(
     addDefaultResponseValidation()
     expectSuccess = true
     followRedirects = true
-    engine {
-        pipelining = true
-        endpoint { }
-    }
 }
