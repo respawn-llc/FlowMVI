@@ -18,10 +18,10 @@ object Config {
     const val artifactId = "$group.$artifact"
 
     const val majorRelease = 3
-    const val minorRelease = 3
+    const val minorRelease = 4
     const val patch = 0
-    const val postfix = "-alpha03" // include dash (-)
-    const val versionCode = 15
+    const val postfix = "" // include dash (-)
+    const val versionCode = 16
 
     const val majorVersionName = "$majorRelease.$minorRelease.$patch"
     const val versionName = "$majorVersionName$postfix"
@@ -121,7 +121,7 @@ object Config {
         const val name = Config.name
         const val minIdeaVersion = "241"
         const val certPath = "certificates/plugin_certificate_chain.crt"
-        val jvmTarget = JvmTarget.JVM_17
+        val jvmTarget = JvmTarget.JVM_21
 
         @Language("HTML")
         const val description = """
