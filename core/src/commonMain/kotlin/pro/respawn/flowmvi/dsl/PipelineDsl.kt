@@ -6,7 +6,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.job
 import pro.respawn.flowmvi.api.DelicateStoreApi
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -35,7 +34,6 @@ public suspend inline fun <S : MVIState, I : MVIIntent, A : MVIAction> pipelineC
  *
  * @see Job.invokeOnCompletion
  */
-@FlowMVIDSL
 public fun PipelineContext<*, *, *>.onStop(
     handler: CompletionHandler
 ): DisposableHandle = coroutineContext.job.invokeOnCompletion(handler)

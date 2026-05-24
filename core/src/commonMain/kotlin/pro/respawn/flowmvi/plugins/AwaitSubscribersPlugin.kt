@@ -9,7 +9,6 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -27,10 +26,8 @@ import kotlin.time.Duration
 public class SubscriberManager {
 
     internal companion object {
-
         internal const val Name = "AwaitSubscribersPlugin"
     }
-
     private val subscriber = atomic<Job?>(null)
 
     /**
@@ -72,7 +69,6 @@ public class SubscriberManager {
             }
         )
     }
-
     internal fun <S : MVIState, I : MVIIntent, A : MVIAction> asPlugin(
         name: String,
         timeout: Duration,
@@ -104,7 +100,6 @@ public class SubscriberManager {
  * Installs a new [awaitSubscribersPlugin]
  * @see awaitSubscribersPlugin
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.awaitSubscribers(
     manager: SubscriberManager = SubscriberManager(),
     minSubs: Int = 1,
@@ -121,7 +116,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.aw
  * By default, cannot be installed multiple times, but [name] can be overridden to allow that,
  * provided that you do not reuse the [manager].
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> awaitSubscribersPlugin(
     manager: SubscriberManager,
     minSubs: Int = 1,

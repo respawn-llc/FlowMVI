@@ -42,6 +42,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 import kotlin.time.TimeMark
@@ -60,6 +61,8 @@ private sealed interface Event {
     data class RunDuration(val duration: Duration) : Event
     data class Recovery(val duration: Duration) : Event
 }
+
+private const val UnrecordedDurationNanos = Long.MIN_VALUE
 
 internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     val reportingScope: CoroutineScope,
@@ -114,7 +117,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     private val stateVetoed = atomic(0L)
     private val startedInInitialState = atomic(false)
     private val timeToFirstStateStart = atomic<TimeMark?>(null)
-    private val timeToFirstState = atomic<Duration?>(null)
+    private val timeToFirstStateNanos = atomic(UnrecordedDurationNanos)
 
     private val subscribersMedian = P2QuantileEstimator(Q50.value)
     private val lifetimeMedian = P2QuantileEstimator(Q50.value)
@@ -181,7 +184,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         lastConfig.value = config
         val shouldTrackTtfs = states.value == config.initial
         startedInInitialState.value = shouldTrackTtfs
-        timeToFirstState.value = null
+        timeToFirstStateNanos.value = UnrecordedDurationNanos
         timeToFirstStateStart.value = if (shouldTrackTtfs) timeSource.markNow() else null
         firstStartAt.compareAndSet(null, clock.now())
         startCount.incrementAndGet()
@@ -498,7 +501,9 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
                 transitions = stateTransitions.value,
                 transitionsVetoed = stateVetoed.value,
                 startedInInitialState = startedInInitialState.value,
-                timeToFirstState = timeToFirstState.value,
+                timeToFirstState = timeToFirstStateNanos.value
+                    .takeUnless { it == UnrecordedDurationNanos }
+                    ?.nanoseconds,
                 updateAvg = statePerf.averageTimeMillis.toDurationOrZero(),
                 updateP50 = stateDurations.getQuantile(Q50.value).toDurationOrZero(),
                 updateP90 = stateDurations.getQuantile(Q90.value).toDurationOrZero(),
@@ -559,7 +564,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         stateVetoed.value = 0
         startedInInitialState.value = false
         timeToFirstStateStart.value = null
-        timeToFirstState.value = null
+        timeToFirstStateNanos.value = UnrecordedDurationNanos
         subscribersState.value = SubscribersState(
             events = 0,
             current = 0,
@@ -613,7 +618,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     private fun recordTimeToFirstState(result: S?, initial: S) {
         if (result == null || result == initial) return
         val start = timeToFirstStateStart.value ?: return
-        if (timeToFirstState.compareAndSet(null, start.elapsedNow())) {
+        if (timeToFirstStateNanos.compareAndSet(UnrecordedDurationNanos, start.elapsedNow().inWholeNanoseconds)) {
             timeToFirstStateStart.value = null
         }
     }

@@ -2,13 +2,11 @@
 
 package pro.respawn.flowmvi.plugins
 
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.StorePlugin
 import pro.respawn.flowmvi.dsl.StoreBuilder
-
 private const val ConsumeIntentsPluginName: String = "ConsumeIntents"
 
 /**
@@ -19,7 +17,6 @@ private const val ConsumeIntentsPluginName: String = "ConsumeIntents"
  *
  * @see reducePlugin
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> consumeIntentsPlugin(
     name: String = ConsumeIntentsPluginName,
 ): StorePlugin<S, I, A> = reducePlugin(name = name, consume = true) { }
@@ -34,7 +31,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> consumeIntentsPlugin(
  * @see reduce
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.consumeIntents(
     name: String = ConsumeIntentsPluginName,
 ): Unit = reduce(name = name, consume = true) { }

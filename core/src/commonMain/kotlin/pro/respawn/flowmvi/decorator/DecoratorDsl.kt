@@ -3,7 +3,6 @@
 package pro.respawn.flowmvi.decorator
 
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -40,7 +39,6 @@ ShutdownContext<S, I, A>.(child: StorePlugin<S, I, A>, e: V) -> Unit
  *
  * Consult the [PluginDecorator] and [DecoratorBuilder] docs for more info.
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> decorator(
     block: DecoratorBuilder<S, I, A>.() -> Unit
@@ -49,7 +47,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> decorator(
 /**
  * Return a new [StorePlugin] that decorates `this` plugin using [decorator]
  */
-@FlowMVIDSL
 public infix fun <S : MVIState, I : MVIIntent, A : MVIAction> StorePlugin<S, I, A>.decoratedWith(
     decorator: PluginDecorator<S, I, A>
 ): StorePlugin<S, I, A> = asInstance().decorate(decorator)
@@ -57,7 +54,6 @@ public infix fun <S : MVIState, I : MVIIntent, A : MVIAction> StorePlugin<S, I, 
 /**
  * Returns a new [StorePlugin] with `this` [PluginDecorator] applied to the [plugin].
  */
-@FlowMVIDSL
 public infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginDecorator<S, I, A>.decorates(
     plugin: StorePlugin<S, I, A>
 ): StorePlugin<S, I, A> = plugin.asInstance().decorate(this)
@@ -67,11 +63,9 @@ public infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginDecorator<S,
  *
  * Decorators are wrapped in the order of iteration: `D_N( ...D1( D0( Plugin ) )... )`
  */
-@FlowMVIDSL
 public infix fun <S : MVIState, I : MVIIntent, A : MVIAction> StorePlugin<S, I, A>.decoratedWith(
     decorators: Iterable<PluginDecorator<S, I, A>>
 ): StorePlugin<S, I, A> = decorators.fold(this) { next, decorator -> next decoratedWith decorator }
-
 internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S, I, A>.decorate(
     decorator: PluginDecorator<S, I, A>,
 ): PluginInstance<S, I, A> = copy(
@@ -119,7 +113,6 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         ctx@{ wrap(this, this@decorate, it) }
     }
 )
-
 private inline fun <H, W> wrapNotNull(
     action: H?,
     wrapper: W?,

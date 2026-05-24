@@ -1,6 +1,5 @@
 package pro.respawn.flowmvi.dsl
 
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.IntentReceiver
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -35,31 +34,27 @@ public value class LambdaIntent<S : MVIState, A : MVIAction>(
 /**
  * An alias for [pro.respawn.flowmvi.api.IntentReceiver.send] ([LambdaIntent] ([block]))
  */
-@FlowMVIDSL
 public fun <S : MVIState, A : MVIAction> IntentReceiver<LambdaIntent<S, A>>.send(
-    @BuilderInference block: suspend PipelineContext<S, LambdaIntent<S, A>, A>.() -> Unit
+    block: suspend PipelineContext<S, LambdaIntent<S, A>, A>.() -> Unit
 ): Unit = intent(LambdaIntent(block))
 
 /**
  * An alias for [pro.respawn.flowmvi.api.IntentReceiver.intent] ([LambdaIntent] ([block]))
  */
-@FlowMVIDSL
 public fun <S : MVIState, A : MVIAction> IntentReceiver<LambdaIntent<S, A>>.intent(
-    @BuilderInference block: suspend PipelineContext<S, LambdaIntent<S, A>, A>.() -> Unit
+    block: suspend PipelineContext<S, LambdaIntent<S, A>, A>.() -> Unit
 ): Unit = send(block)
 
 /**
  * An alias for [pro.respawn.flowmvi.api.IntentReceiver.emit] ([LambdaIntent] ([block]))
  */
-@FlowMVIDSL
 public suspend fun <S : MVIState, A : MVIAction> IntentReceiver<LambdaIntent<S, A>>.emit(
-    @BuilderInference block: suspend PipelineContext<S, LambdaIntent<S, A>, A>.() -> Unit
+    block: suspend PipelineContext<S, LambdaIntent<S, A>, A>.() -> Unit
 ): Unit = emit(LambdaIntent(block))
 
 /**
  * Install a new [pro.respawn.flowmvi.plugins.reducePlugin] that is tailored for [LambdaIntent]s.
  */
-@FlowMVIDSL
 public fun <S : MVIState, A : MVIAction> StoreBuilder<S, LambdaIntent<S, A>, A>.reduceLambdas(
     name: String = ReducePluginName,
     consume: Boolean = true,

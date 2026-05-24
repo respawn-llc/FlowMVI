@@ -6,7 +6,6 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.annotation.InternalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -37,14 +36,12 @@ import pro.respawn.flowmvi.plugins.TimeTravel
 import pro.respawn.flowmvi.plugins.compositePlugin
 import pro.respawn.flowmvi.plugins.timeTravelPlugin
 import kotlin.time.Duration
-
 @PublishedApi
 internal const val NonDebuggableStoreMessage: String = """
 The debugger has been disabled because store is not debuggable!
 Please set `debuggable = true` before installing the plugin.
 Don't include debug code in production builds.
 """
-
 private fun <S : MVIState, I : MVIIntent, A : MVIAction> DebugClientStore.asPlugin(
     clientKey: String?,
     timeTravel: TimeTravel<S, I, A>, // will be used later
@@ -110,7 +107,6 @@ private fun <S : MVIState, I : MVIIntent, A : MVIAction> DebugClientStore.asPlug
  * because the plugin depends on a lot of things you may not need for your application.
  */
 @OptIn(InternalFlowMVIAPI::class)
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debuggerPlugin(
     client: HttpClient,
     timeTravel: TimeTravel<S, I, A>,
@@ -142,7 +138,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debuggerPlugin(
  * Better yet, do not include the debugger-client dependency at all in production builds,
  * because the plugin depends on a lot of things you may not need for your application.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debuggerPlugin(
     client: HttpClient,
     historySize: Int = DefaultHistorySize,
@@ -182,7 +177,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debuggerPlugin(
  * Better yet, do not include the debugger-client dependency at all in production builds,
  * because the plugin depends on a lot of things you may not need for your application.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.enableRemoteDebugging(
     client: HttpClient,
     historySize: Int = DefaultHistorySize,
@@ -198,7 +192,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.en
         reconnectionDelay = reconnectionDelay
     )
 )
-
 private inline fun StoreConfiguration<*>.ensureDebuggable(orElse: () -> Unit) {
     if (!debuggable) {
         logger.warn(name) { NonDebuggableStoreMessage }

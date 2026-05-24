@@ -1,7 +1,6 @@
 package pro.respawn.flowmvi.test.plugin
 
 import kotlinx.coroutines.coroutineScope
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -21,7 +20,6 @@ import pro.respawn.flowmvi.plugins.TimeTravel
  * * You can use [TestPipelineContext] which is provided with the [PluginTestScope], to set up the plugin's
  * environment for the test.
  */
-@FlowMVIDSL
 public suspend fun <S : MVIState, I : MVIIntent, A : MVIAction> LazyPlugin<S, I, A>.test(
     initial: S,
     timeTravel: TimeTravel<S, I, A> = TimeTravel(),

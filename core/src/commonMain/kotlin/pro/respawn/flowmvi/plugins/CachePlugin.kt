@@ -4,7 +4,6 @@ package pro.respawn.flowmvi.plugins
 
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.update
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -99,7 +98,7 @@ public class CachedValue<out T, S : MVIState, I : MVIIntent, A : MVIAction> inte
  * @see cachePlugin
  */
 public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> cached(
-    @BuilderInference init: suspend PipelineContext<S, I, A>.() -> T,
+    init: suspend PipelineContext<S, I, A>.() -> T,
 ): CachedValue<T, S, I, A> = CachedValue(init)
 
 /**
@@ -110,7 +109,6 @@ public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> cached(
  * @see cache
  * @see cached
  */
-@FlowMVIDSL
 public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> cachePlugin(
     value: CachedValue<T, S, I, A>,
     name: String? = null,
@@ -124,8 +122,7 @@ public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> cachePlugin(
  * @see cachePlugin
  * @see cached
  */
-@FlowMVIDSL
 public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.cache(
     name: String? = null,
-    @BuilderInference init: suspend PipelineContext<S, I, A>.() -> T,
+    init: suspend PipelineContext<S, I, A>.() -> T,
 ): CachedValue<T, S, I, A> = CachedValue(init).apply { install(asPlugin(name)) }

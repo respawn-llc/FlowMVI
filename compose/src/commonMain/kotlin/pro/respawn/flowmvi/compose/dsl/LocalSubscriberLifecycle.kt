@@ -8,14 +8,12 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.SubscriberLifecycle
 
 /**
  * A local composition [SubscriberLifecycle] instance. May return `null` if no lifecycle was provided.
  * Can be provided with [ProvideSubscriberLifecycle].
  */
-@FlowMVIDSL
 public val LocalSubscriberLifecycle: ProvidableCompositionLocal<SubscriberLifecycle?> = staticCompositionLocalOf {
     null
 }
@@ -23,7 +21,6 @@ public val LocalSubscriberLifecycle: ProvidableCompositionLocal<SubscriberLifecy
 /** Provides [LocalSubscriberLifecycle] with an instance of [lifecycle] for child [content].
  *
  */
-@FlowMVIDSL
 @Composable
 public fun ProvideSubscriberLifecycle(
     lifecycle: SubscriberLifecycle,
@@ -36,7 +33,6 @@ public fun ProvideSubscriberLifecycle(
 /**
  * Remember a new subscriber lifecycle instance from [delegate] to convert it using [factory]
  */
-@FlowMVIDSL
 @Composable
 public fun <T> rememberSubscriberLifecycle(
     delegate: T,
@@ -46,7 +42,6 @@ public fun <T> rememberSubscriberLifecycle(
 /**
  * Get the current provided subscriber lifecycle, or if not found, fall back to the platform-provided lifecycle
  */
-@FlowMVIDSL
 public val DefaultLifecycle: SubscriberLifecycle
     @Composable
     get() = LocalSubscriberLifecycle.current
@@ -58,11 +53,8 @@ public val DefaultLifecycle: SubscriberLifecycle
  * For a fallback behavior, use [DefaultLifecycle].
  */
 @Composable
-@FlowMVIDSL
 public fun requireLifecycle(): SubscriberLifecycle = requireNotNull(LocalSubscriberLifecycle.current) {
-    """
-        Subscriber lifecycle was required but not found. 
-        Please either provide a lifecycle using LocalSubscriberLifecycle, pass the lifecycle manually,
-        or use DefaultLifecycle to fall back to system lifecycle.
-    """.trimIndent()
+    "Subscriber lifecycle was required but not found. " +
+        "Please either provide a lifecycle using LocalSubscriberLifecycle, pass the lifecycle manually, " +
+        "or use DefaultLifecycle to fall back to system lifecycle."
 }

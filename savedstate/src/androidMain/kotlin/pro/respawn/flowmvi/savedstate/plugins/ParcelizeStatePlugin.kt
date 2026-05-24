@@ -6,7 +6,6 @@ package pro.respawn.flowmvi.savedstate.plugins
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.Dispatchers
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -35,8 +34,7 @@ import kotlin.coroutines.CoroutineContext
  * @see parcelizeStatePlugin
  * @see ParcelableSaver
  */
-@Suppress("BOUNDS_NOT_ALLOWED_IF_BOUNDED_BY_TYPE_PARAMETER") // should be applicable to java only
-@FlowMVIDSL
+@Suppress("BOUNDS_NOT_ALLOWED_IF_BOUNDED_BY_TYPE_PARAMETER") // relevant only for Java interop, which we do not support
 public inline fun <reified T, reified S : MVIState, I : MVIIntent, A : MVIAction> parcelizeStatePlugin(
     handle: SavedStateHandle,
     context: CoroutineContext = Dispatchers.IO,
@@ -64,7 +62,6 @@ public inline fun <reified T, reified S : MVIState, I : MVIIntent, A : MVIAction
  */
 @Suppress("BOUNDS_NOT_ALLOWED_IF_BOUNDED_BY_TYPE_PARAMETER")
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <reified T, reified S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.parcelizeState(
     handle: SavedStateHandle,
     context: CoroutineContext = Dispatchers.IO,

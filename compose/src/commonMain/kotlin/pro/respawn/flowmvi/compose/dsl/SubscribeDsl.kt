@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.api.ActionConsumer
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -24,7 +23,6 @@ import kotlin.jvm.JvmName
  *  @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  *  @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> LifecycleOwner.subscribe(
     store: Store<S, I, A>,
     noinline consume: suspend (action: A) -> Unit,
@@ -44,7 +42,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> LifecycleOwner.su
  *  @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  *  @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> LifecycleOwner.subscribe(
     store: Store<S, I, A>,
     crossinline render: suspend (state: S) -> Unit,
@@ -63,7 +60,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> LifecycleOwner.su
  * @see repeatOnLifecycle
  */
 @JvmName("subscribeAndConsume")
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
     provider: Store<S, I, A>,
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
@@ -75,7 +71,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
  * @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  * @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
     provider: Store<S, I, A>,
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,

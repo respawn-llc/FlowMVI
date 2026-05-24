@@ -25,7 +25,6 @@ public interface StateReceiver<S : MVIState> : ImmediateStateReceiver<S> {
      * @see [withState]
      * @see [updateStateImmediate]
      */
-    @FlowMVIDSL
     public suspend fun updateState(transform: suspend S.() -> S)
 
     /**
@@ -46,6 +45,5 @@ public interface StateReceiver<S : MVIState> : ImmediateStateReceiver<S> {
      * ```
      * you will not get a deadlock even if the transaction is serializable.
      */
-    @FlowMVIDSL
     public suspend fun withState(block: suspend S.() -> Unit)
 }

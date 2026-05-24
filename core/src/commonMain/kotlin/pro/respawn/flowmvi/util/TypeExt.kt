@@ -4,24 +4,21 @@ package pro.respawn.flowmvi.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIState
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.reflect.KMutableProperty0
 
-private fun duplicatePropMessage(name: String) = """
-    Value of $name has already been set. Setting the value of this property multiple times will override any previous
-    invocations, which is likely not what you meant to do. 
-    Please merge the logic from the second invocation with the first one.
-""".trimIndent()
+private fun duplicatePropMessage(name: String): String =
+    "Value of $name has already been set. Setting the value of this property multiple times will override any " +
+        "previous invocations, which is likely not what you meant to do. Please merge the logic from the second " +
+        "invocation with the first one."
 
 /**
  * Do the operation on [this] if the type of [this] is [T], and return [R], otherwise return [this]
  */
-@FlowMVIDSL
 @IgnorableReturnValue
-public inline fun <reified T : R, R> R.withType(@BuilderInference block: T.() -> R): R {
+public inline fun <reified T : R, R> R.withType(block: T.() -> R): R {
     contract {
         callsInPlace(block, InvocationKind.AT_MOST_ONCE)
     }
@@ -33,7 +30,6 @@ public inline fun <reified T : R, R> R.withType(@BuilderInference block: T.() ->
  *
  * Just an alias for `(this as? T)`
  */
-@FlowMVIDSL
 public inline fun <reified T> Any?.typed(): T? = this as? T
 
 /**

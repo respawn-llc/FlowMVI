@@ -6,7 +6,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.api.ActionConsumer
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.ImmutableStore
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -21,9 +20,8 @@ import kotlin.jvm.JvmName
  * This means the function will suspend forever.
  * @see subscribe for non-suspending variant
  */
-@FlowMVIDSL
 public suspend inline fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.collect(
-    @BuilderInference crossinline consume: suspend Provider<S, I, A>.() -> Unit,
+    crossinline consume: suspend Provider<S, I, A>.() -> Unit,
 ): Unit = coroutineScope {
     subscribe { consume() }.join()
 }
@@ -32,10 +30,9 @@ public suspend inline fun <S : MVIState, I : MVIIntent, A : MVIAction> Immutable
  * Subscribe to the store. An overload of [Store.subscribe] that is applied on [CoroutineScope].
  */
 @JvmName("subscribeConsume")
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> CoroutineScope.subscribe(
     store: ImmutableStore<S, I, A>,
-    @BuilderInference crossinline consume: suspend Provider<S, I, A>.() -> Unit,
+    crossinline consume: suspend Provider<S, I, A>.() -> Unit,
 ): Job = with(store) {
     subscribe { consume() }
 }
@@ -49,7 +46,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> CoroutineScope.su
  * @see [Store.subscribe]
  */
 @JvmName("subscribeAndRender")
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> CoroutineScope.subscribe(
     store: ImmutableStore<S, I, A>,
     crossinline consume: suspend (action: A) -> Unit,
@@ -72,7 +68,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> CoroutineScope.su
  * @see [Store.subscribe]
  */
 @JvmName("subscribeAndRender")
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> CoroutineScope.subscribe(
     store: ImmutableStore<S, I, A>,
     crossinline render: suspend (state: S) -> Unit,
@@ -90,7 +85,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> CoroutineScope.su
  *   Such subscribers will not receive state updates or actions. Don't forget to launch the store.
  * @see [Store.subscribe]
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
     store: ImmutableStore<S, I, A>,
     scope: CoroutineScope
@@ -106,7 +100,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
  *   Such subscribers will not receive state updates or actions. Don't forget to launch the store.
  * @see [Store.subscribe]
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StateConsumer<S>.subscribe(
     store: ImmutableStore<S, I, A>,
     scope: CoroutineScope

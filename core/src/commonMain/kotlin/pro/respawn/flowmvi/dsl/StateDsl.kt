@@ -2,7 +2,6 @@ package pro.respawn.flowmvi.dsl
 
 import pro.respawn.flowmvi.annotation.InternalFlowMVIAPI
 import pro.respawn.flowmvi.api.DelicateStoreApi
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.ImmediateStateReceiver
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.PipelineContext
@@ -45,9 +44,8 @@ public inline val <S : MVIState> StateProvider<S>.state: S get() = states.value
  * @see StateReceiver.withState
  */
 @OptIn(DelicateStoreApi::class, InternalFlowMVIAPI::class)
-@FlowMVIDSL
 public inline fun <S : MVIState> ImmediateStateReceiver<S>.updateStateImmediate(
-    @BuilderInference transform: S.() -> S
+    transform: S.() -> S
 ) {
     contract {
         callsInPlace(transform, InvocationKind.AT_LEAST_ONCE)
@@ -58,17 +56,15 @@ public inline fun <S : MVIState> ImmediateStateReceiver<S>.updateStateImmediate(
 /**
  * A typed overload of [StateReceiver.withState].
  */
-@FlowMVIDSL
 public suspend inline fun <reified T : S, S : MVIState> StateReceiver<S>.withState(
-    @BuilderInference crossinline block: suspend T.() -> Unit
+    crossinline block: suspend T.() -> Unit
 ): Unit = withState { typed<T>()?.block() }
 
 /**
  * A typed overload of [StateReceiver.updateState].
  */
-@FlowMVIDSL
 public suspend inline fun <reified T : S, S : MVIState> StateReceiver<S>.updateState(
-    @BuilderInference crossinline transform: suspend T.() -> S
+    crossinline transform: suspend T.() -> S
 ): Unit = updateState { withType<T, _> { transform() } }
 
 /**
@@ -77,10 +73,9 @@ public suspend inline fun <reified T : S, S : MVIState> StateReceiver<S>.updateS
  * @see StateReceiver.withState
  * @see StateReceiver.updateState
  */
-@FlowMVIDSL
 @JvmName("updateStateImmediateTyped")
 public inline fun <reified T : S, S : MVIState> ImmediateStateReceiver<S>.updateStateImmediate(
-    @BuilderInference transform: T.() -> S
+    transform: T.() -> S
 ): Unit = updateStateImmediate { withType<T, _> { transform() } }
 
 /**
@@ -88,9 +83,8 @@ public inline fun <reified T : S, S : MVIState> ImmediateStateReceiver<S>.update
  *
  * Same rules apply as [StateReceiver.withState]
  */
-@FlowMVIDSL
 public suspend inline fun <reified T : S, S : MVIState> PipelineContext<S, *, *>.withStateOrThrow(
-    @BuilderInference crossinline block: suspend T.() -> Unit
+    crossinline block: suspend T.() -> Unit
 ): Unit = withState {
     typed<T>()?.block() ?: throw InvalidStateException(T::class.simpleName, this::class.simpleName)
 }
@@ -100,9 +94,8 @@ public suspend inline fun <reified T : S, S : MVIState> PipelineContext<S, *, *>
  *
  * Same rules apply as [StateReceiver.updateState]
  */
-@FlowMVIDSL
 public suspend inline fun <reified T : S, S : MVIState> PipelineContext<S, *, *>.updateStateOrThrow(
-    @BuilderInference crossinline transform: suspend T.() -> S
+    crossinline transform: suspend T.() -> S
 ): Unit = updateState {
     typed<T>()?.transform() ?: throw InvalidStateException(T::class.simpleName, this::class.simpleName)
 }

@@ -4,7 +4,6 @@ package pro.respawn.flowmvi.plugins
 
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.getAndUpdate
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -15,11 +14,9 @@ import pro.respawn.flowmvi.dsl.plugin
 private const val DisallowRestartMessage = """
 Store was disallowed to restart but was restarted. Please remove disallowRestartPlugin() or do not reuse the store.
 """
-
 private const val DisallowRestartPluginName = "DisallowRestartPlugin"
 
 private class RestartHolder {
-
     private val started = atomic(false)
     fun update(value: Boolean) = started.getAndUpdate { value }
 }
@@ -32,7 +29,6 @@ private class RestartHolder {
  *
  * There is no need to install this plugin multiple times so the plugin has a unique [StorePlugin.name].
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> disallowRestartPlugin(): StorePlugin<S, I, A> = plugin {
     name = DisallowRestartPluginName
     val holder = RestartHolder()
@@ -46,6 +42,5 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> disallowRestartPlugin():
  * This plugin can only be installed only once.
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.disallowRestart(): Unit =
     install(disallowRestartPlugin())

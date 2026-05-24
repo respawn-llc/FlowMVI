@@ -6,7 +6,6 @@ import com.arkivanov.essenty.statekeeper.StateKeeper
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import pro.respawn.flowmvi.api.DelicateStoreApi
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -24,7 +23,6 @@ import pro.respawn.flowmvi.util.typed
  * Be careful not to leak the state keeper instance if you are retaining your store ([retainedStore]
  */
 @OptIn(ExperimentalSerializationApi::class, DelicateStoreApi::class)
-@FlowMVIDSL
 public inline fun <reified T : S, S : MVIState, I : MVIIntent, A : MVIAction> keepStatePlugin(
     keeper: StateKeeper,
     serializer: KSerializer<T>,
@@ -48,7 +46,6 @@ public inline fun <reified T : S, S : MVIState, I : MVIIntent, A : MVIAction> ke
  */
 @OptIn(ExperimentalSerializationApi::class)
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <reified T : S, S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.keepState(
     keeper: StateKeeper,
     serializer: KSerializer<T>,

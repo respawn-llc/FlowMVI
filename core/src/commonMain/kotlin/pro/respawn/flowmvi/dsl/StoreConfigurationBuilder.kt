@@ -32,7 +32,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * `false` by default.
      */
-    @FlowMVIDSL
     public var parallelIntents: Boolean = false
 
     /**
@@ -42,7 +41,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * [ActionShareBehavior.Distribute] by default.
      */
-    @FlowMVIDSL
     public var actionShareBehavior: ActionShareBehavior = ActionShareBehavior.Distribute()
 
     /**
@@ -56,7 +54,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * [StateStrategy.Atomic] with [StateStrategy.Atomic.reentrant] = `true` by default
      */
-    @FlowMVIDSL
     public var stateStrategy: StateStrategy = StateStrategy.Atomic(true)
 
     /**
@@ -71,7 +68,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      *  [Channel.UNLIMITED] by default.
      */
-    @FlowMVIDSL
     public var intentCapacity: Int = Channel.UNLIMITED
 
     /**
@@ -79,20 +75,17 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * [BufferOverflow.DROP_OLDEST] by default
      */
-    @FlowMVIDSL
     public var onOverflow: BufferOverflow = BufferOverflow.DROP_OLDEST
 
     /**
      * Settings this to `true` enables additional [Store] validations and debug logging.
      */
-    @FlowMVIDSL
     public var debuggable: Boolean = false
 
     /**
      * A flag to indicate that clients may subscribe to this store even while it is not started.
      * If you intend to stop and restart your store while the subscribers are present, set this to `true`.
      */
-    @FlowMVIDSL
     public var allowIdleSubscriptions: Boolean? = null
 
     /**
@@ -104,7 +97,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * By default, this is enabled if [debuggable] is `true`.
      */
-    @FlowMVIDSL
     public var allowTransientSubscriptions: Boolean? = null
 
     /**
@@ -113,7 +105,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      *  All store operations will be launched in that context by default
      */
-    @FlowMVIDSL
     public var coroutineContext: CoroutineContext = EmptyCoroutineContext
 
     /**
@@ -123,7 +114,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * If the logger was set explicitly, then it will be used regardless of the [debuggable] flag.
      */
-    @FlowMVIDSL
     public var logger: StoreLogger? = null
 
     /**
@@ -131,7 +121,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * By default, set to `true` only if the store is [debuggable].
      */
-    @FlowMVIDSL
     public var verifyPlugins: Boolean? = null
 
     /**
@@ -140,7 +129,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
      *
      * `null` by default
      */
-    @FlowMVIDSL
     public var name: String? = null
 
     // region deprecated
@@ -148,7 +136,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
         "Please use the StateStrategy property",
         replaceWith = ReplaceWith("stateStrategy = StateStrategy.Immediate"),
     )
-    @FlowMVIDSL
     @Suppress("UndocumentedPublicProperty")
     public var atomicStateUpdates: Boolean
         get() = stateStrategy is StateStrategy.Atomic
@@ -181,7 +168,6 @@ public class StoreConfigurationBuilder @PublishedApi internal constructor() {
 /**
  * Create a new [StoreConfiguration]
  */
-@FlowMVIDSL
 public inline fun <S : MVIState> configuration(
     initial: S,
     block: StoreConfigurationBuilder.() -> Unit,

@@ -18,23 +18,23 @@ import pro.respawn.flowmvi.api.MVIIntent
 /**
  * An alias for [IntentReceiver.send]
  */
-context(receiver: IntentReceiver<I>) @FlowMVIDSL
+context(receiver: IntentReceiver<I>)
 public fun <I : MVIIntent> I.send(): Unit = receiver.intent(this)
 
 /**
  * An alias for [ActionReceiver.action]
  */
-context(receiver: ActionReceiver<A>) @FlowMVIDSL
+context(receiver: ActionReceiver<A>)
 public suspend fun <A : MVIAction> A.send(): Unit = receiver.action(this)
 
 /**
  * An alias for [IntentReceiver.emit]
  */
-context(receiver: IntentReceiver<I>) @FlowMVIDSL
+context(receiver: IntentReceiver<I>)
 public suspend fun <I : MVIIntent> I.emit(): Unit = receiver.emit(this)
 
 /**
  * An alias for [ActionReceiver.action]
  */
-context(receiver: ActionReceiver<A>) @FlowMVIDSL
+context(receiver: ActionReceiver<A>)
 public suspend fun <A : MVIAction> A.emit(): Unit = receiver.emit(this)

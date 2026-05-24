@@ -8,7 +8,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -20,10 +19,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
 private class JobHandle {
-
     var job by atomic<Job?>(null)
         private set
-
     inline fun set(job: Job?) {
         this.job = job
     }
@@ -37,7 +34,6 @@ private class JobHandle {
  * A non-positive [timeout] forwards the intent immediately, matching flow's behavior.
  */
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
     timeout: Duration,
     name: String? = "DebounceIntents",
@@ -50,7 +46,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator
  * Non-positive durations deliver immediately. Pending deliveries are cancelled when a new intent arrives.
  */
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
     name: String? = "DebounceIntents",
     timeoutSelector: suspend PipelineContext<S, I, A>.(I) -> Duration,
@@ -79,7 +74,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator
  * Installs a [debounceIntentsDecorator] with a fixed timeout for all intents in this store.
  */
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.debounceIntents(
     timeout: Duration,
     name: String? = "DebounceIntents",
@@ -89,7 +83,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.de
  * Installs a [debounceIntentsDecorator] with a dynamic timeout selector for all intents in this store.
  */
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.debounceIntents(
     name: String? = "DebounceIntents",
     timeoutSelector: suspend PipelineContext<S, I, A>.(I) -> Duration,

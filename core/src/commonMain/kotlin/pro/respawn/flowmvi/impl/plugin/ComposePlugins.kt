@@ -78,8 +78,8 @@ internal fun <
 )
 
 private inline fun <A : MVIAction, I : MVIIntent, S : MVIState, L, R> List<PluginInstance<S, I, A>>.compose(
-    @BuilderInference selector: PluginInstance<S, I, A>.() -> L?,
-    @BuilderInference block: List<L>.() -> R,
+    selector: PluginInstance<S, I, A>.() -> L?,
+    block: List<L>.() -> R,
 ): R? = mapNotNull(selector).takeIf { it.isNotEmpty() }?.block()
 
 private inline fun <R, L> List<L>.fold(

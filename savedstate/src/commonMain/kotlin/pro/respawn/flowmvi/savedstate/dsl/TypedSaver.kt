@@ -13,8 +13,8 @@ import pro.respawn.flowmvi.util.typed
 @Suppress("DEPRECATION") // TODO: remove recover
 public inline fun <reified T, R> MapSaver(
     delegate: Saver<R>,
-    @BuilderInference crossinline from: suspend (R) -> T?,
-    @BuilderInference crossinline to: suspend (T?) -> R?,
+    crossinline from: suspend (R) -> T?,
+    crossinline to: suspend (T?) -> R?,
 ): Saver<T> = Saver(
     save = { delegate.save(to(it)) },
     restore = { delegate.restore()?.let { from(it) } },

@@ -2,7 +2,6 @@
 
 package pro.respawn.flowmvi.plugins
 
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -34,11 +33,10 @@ public typealias Reduce<S, I, A> = suspend PipelineContext<S, I, A>.(intent: I) 
  * Events will be consumed (not passed along the chain of plugins) if [consume] is true (true by default).
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.reduce(
     consume: Boolean = true,
     name: String = ReducePluginName,
-    @BuilderInference crossinline reduce: Reduce<S, I, A>,
+    crossinline reduce: Reduce<S, I, A>,
 ): Unit = install(reducePlugin(consume, name, reduce))
 
 /**
@@ -52,11 +50,10 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I
  *
  * Events will be consumed (not passed along the chain of plugins) if [consume] is true (true by default).
  **/
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> reducePlugin(
     consume: Boolean = true,
     name: String = ReducePluginName,
-    @BuilderInference crossinline reduce: Reduce<S, I, A>,
+    crossinline reduce: Reduce<S, I, A>,
 ): StorePlugin<S, I, A> = plugin {
     this.name = name
     onIntent {

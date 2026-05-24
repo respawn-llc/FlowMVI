@@ -73,13 +73,13 @@ internal fun debugServerStore() = lazyStore<State, Intent, Action>(Idle) {
                 client.copy(
                     name = client.name ?: intent.snapshot.meta.storeName,
                     metrics = client.metrics
-                        .add(intent.snapshot)
+                        .adding(intent.snapshot)
                         .let { list ->
                             if (list.size <= ServerHistorySize) list
                             else list.takeLast(ServerHistorySize).toPersistentList()
                         }
                 )
-                    .let { clients.put(key, it) }
+                    .let { clients.putting(key, it) }
                     .let { copy(clients = it) }
             }
             is EventReceived -> state {
@@ -88,7 +88,7 @@ internal fun debugServerStore() = lazyStore<State, Intent, Action>(Idle) {
                     is StoreDisconnected -> {
                         existing ?: return@state this
                         copy(
-                            clients = clients.put(
+                            clients = clients.putting(
                                 key = intent.key,
                                 value = existing.copy(
                                     isConnected = false,
@@ -98,7 +98,7 @@ internal fun debugServerStore() = lazyStore<State, Intent, Action>(Idle) {
                         )
                     }
                     is StoreConnected -> copy(
-                        clients = clients.put(
+                        clients = clients.putting(
                             key = intent.key,
                             value = (existing ?: Client(id = intent.from, name = event.name)).copy(
                                 id = intent.from,
@@ -114,7 +114,7 @@ internal fun debugServerStore() = lazyStore<State, Intent, Action>(Idle) {
                             "It should not be possible to send events to non-connected clients, event: $intent"
                         }
                         val client = existing ?: return@state copy(
-                            clients = clients.put(
+                            clients = clients.putting(
                                 key = intent.key,
                                 value = Client(
                                     id = intent.from,
@@ -124,7 +124,7 @@ internal fun debugServerStore() = lazyStore<State, Intent, Action>(Idle) {
                             )
                         )
                         copy(
-                            clients = clients.put(
+                            clients = clients.putting(
                                 key = intent.key,
                                 value = client.copy(
                                     events = client.events.putEvent(ServerEventEntry(event))

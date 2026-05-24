@@ -4,7 +4,6 @@ package pro.respawn.flowmvi.decorators
 
 import kotlinx.coroutines.withTimeoutOrNull
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -25,7 +24,6 @@ import kotlin.time.Duration
  * @throws StoreTimeoutException
  */
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> intentTimeoutDecorator(
     timeout: Duration,
     name: String? = "IntentTimeout",
@@ -45,7 +43,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> intentTimeoutDecorator(
  */
 @IgnorableReturnValue
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.timeoutIntents(
     timeout: Duration,
     name: String? = "IntentTimeout",

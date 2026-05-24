@@ -6,7 +6,6 @@ package pro.respawn.flowmvi.plugins
 import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -27,13 +26,11 @@ public class TimeTravel<S : MVIState, I : MVIIntent, A : MVIAction>(
     maxActions: Int = DefaultHistorySize,
     maxExceptions: Int = DefaultHistorySize,
 ) {
-
     private val lock = reentrantLock()
 
     public constructor(maxHistorySize: Int = DefaultHistorySize) : this(
         maxHistorySize, maxHistorySize, maxHistorySize, maxHistorySize
     )
-
     private val _states = CappedMutableList<S>(maxStates)
 
     /**
@@ -62,7 +59,6 @@ public class TimeTravel<S : MVIState, I : MVIIntent, A : MVIAction>(
      * The last value is the most recent.
      */
     public val exceptions: Collection<Exception> get() = _exceptions
-
     private var _subscriptions: Int by atomic(0)
 
     /**
@@ -70,21 +66,18 @@ public class TimeTravel<S : MVIState, I : MVIIntent, A : MVIAction>(
      * The last value is the most recent.
      */
     public val subscriptions: Int get() = _subscriptions
-
     private var _starts: Int by atomic(0)
 
     /**
      * Number of times the store was launched. Never decreases.
      */
     public val starts: Int get() = _starts
-
     private var _stops: Int by atomic(0)
 
     /**
      * Number of the times the store was stopped. Never decreases.
      */
     public val stops: Int get() = _stops
-
     private var _unsubscriptions: Int by atomic(0)
 
     /**
@@ -106,7 +99,6 @@ public class TimeTravel<S : MVIState, I : MVIIntent, A : MVIAction>(
         _starts = 0
         _stops = 0
     }
-
     internal fun asPlugin(name: String) = plugin {
         this.name = name
         onState { _: S, new: S -> new.also { lock.withLock { _states.add(new) } } }
@@ -138,7 +130,6 @@ public class TimeTravel<S : MVIState, I : MVIIntent, A : MVIAction>(
  * Install the specified [timeTravel] as a plugin.
  * @return the plugin
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> timeTravelPlugin(
     timeTravel: TimeTravel<S, I, A>,
     name: String = TimeTravel.Name,
@@ -148,7 +139,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> timeTravelPlugin(
  * Create a new [TimeTravel] and installs it. Keep a reference to the object to use its properties.
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.timeTravel(
     timeTravel: TimeTravel<S, I, A>,
     name: String = TimeTravel.Name,
@@ -158,7 +148,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.ti
  * Create a new [TimeTravel] and installs it. Keep a reference to the returning value to use its properties.
  * @return the [TimeTravel] instance.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.timeTravel(
     historySize: Int = TimeTravel.DefaultHistorySize,
     name: String = TimeTravel.Name,

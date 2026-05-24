@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.IntentReceiver
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -33,7 +32,6 @@ public class UndoRedo(
     init {
         require(maxQueueSize > 0) { "Queue size less than 1 is not allowed, you provided: $maxQueueSize" }
     }
-
     private val _queue by atomic<CappedMutableList<Event>>(CappedMutableList(maxQueueSize))
     private val _index = MutableStateFlow(-1)
     private val lock = Mutex()
@@ -142,7 +140,6 @@ public class UndoRedo(
         _queue.clear()
         -1
     }
-
     internal fun <S : MVIState, I : MVIIntent, A : MVIAction> asPlugin(
         name: String?,
         resetOnException: Boolean,
@@ -160,7 +157,6 @@ public class UndoRedo(
         internal val redo: suspend () -> Unit,
         internal val undo: suspend () -> Unit,
     ) {
-
         override fun toString(): String = "UndoRedoPlugin.Event"
     }
 
@@ -185,7 +181,6 @@ public class UndoRedo(
 /**
  * Returns a plugin that manages the [undoRedo] provided.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> undoRedoPlugin(
     undoRedo: UndoRedo,
     name: String? = null,
@@ -198,7 +193,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> undoRedoPlugin(
  * @see UndoRedo
  * @see undoRedoPlugin
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.undoRedo(
     maxQueueSize: Int,
     name: String? = null,

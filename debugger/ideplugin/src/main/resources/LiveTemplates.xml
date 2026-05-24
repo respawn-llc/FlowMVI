@@ -17,7 +17,7 @@
         </context>
     </template>
     <template name="fmvip"
-        value="/**&#10; * TODO: Add documentation&#10; **/&#10;@FlowMVIDSL&#10;fun $TYPE$ $NAME$Plugin(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = plugin&lt;$TYPEP$&gt; {&#10;    this.name = name&#10;    &#10;    $END$&#10;}&#10;&#10;/**&#10; * Install a new [$NAME$Plugin].&#10;**/&#10;@FlowMVIDSL&#10;fun $TYPE$ StoreBuilder&lt;$TYPEP$&gt;.$NAME$(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = install($NAME$Plugin(name))"
+        value="/**&#10; * TODO: Add documentation&#10; **/&#10;fun $TYPE$ $NAME$Plugin(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = plugin&lt;$TYPEP$&gt; {&#10;    this.name = name&#10;    &#10;    $END$&#10;}&#10;&#10;/**&#10; * Install a new [$NAME$Plugin].&#10;**/&#10;fun $TYPE$ StoreBuilder&lt;$TYPEP$&gt;.$NAME$(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = install($NAME$Plugin(name))"
         shortcut="ENTER" description="FlowMVI Plugin" toReformat="true" toShortenFQNames="true">
         <variable name="TYPE" expression="" defaultValue="&quot;&lt;S: MVIState, I: MVIIntent, A: MVIAction&gt;&quot;"
             alwaysStopAt="true" />
@@ -29,7 +29,7 @@
         </context>
     </template>
     <template name="fmvilp"
-        value="/**&#10; * TODO: Add documentation&#10; **/&#10;@FlowMVIDSL&#10;fun $TYPE$ $NAME$Plugin(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = lazyPlugin&lt;$TYPEP$&gt; {&#10;    this.name = name&#10;    &#10;    $END$&#10;}&#10;&#10;/**&#10; * Install a new [$NAME$Plugin].&#10;**/&#10;@FlowMVIDSL&#10;fun $TYPE$ StoreBuilder&lt;$TYPEP$&gt;.$NAME$(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = install($NAME$Plugin(name))"
+        value="/**&#10; * TODO: Add documentation&#10; **/&#10;fun $TYPE$ $NAME$Plugin(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = lazyPlugin&lt;$TYPEP$&gt; {&#10;    this.name = name&#10;    &#10;    $END$&#10;}&#10;&#10;/**&#10; * Install a new [$NAME$Plugin].&#10;**/&#10;fun $TYPE$ StoreBuilder&lt;$TYPEP$&gt;.$NAME$(&#10;    name: String? = &quot;$PluginName$Plugin&quot;,&#10;) = install($NAME$Plugin(name))"
         shortcut="ENTER" description="FlowMVI Plugin" toReformat="true" toShortenFQNames="true">
         <variable name="TYPE" expression="" defaultValue="&quot;&lt;S: MVIState, I: MVIIntent, A: MVIAction&gt;&quot;"
             alwaysStopAt="true" />
@@ -51,7 +51,7 @@
         </context>
     </template>
     <template name="fmvid"
-        value="/**&#10; * TODO: Document the decorator&#10; */&#10;@FlowMVIDSL&#10;fun $TYPE$ $NAME$Decorator(&#10;    name: String? = &quot;$DecoratorName$Decorator&quot;,&#10;) = decorator&lt;$TYPEP$&gt; {&#10;    this.name = name&#10;    $END$&#10;}&#10;&#10;/**&#10; * Installs a new [$NAME$Decorator].&#10; */&#10;@FlowMVIDSL&#10;fun $TYPE$ StoreBuilder&lt;$TYPEP$&gt;.$NAME$(&#10;    name: String? = &quot;$DecoratorName$Decorator&quot;,&#10;) = install($NAME$Decorator(name))&#10;"
+        value="/**&#10; * TODO: Document the decorator&#10; */&#10;fun $TYPE$ $NAME$Decorator(&#10;    name: String? = &quot;$DecoratorName$Decorator&quot;,&#10;) = decorator&lt;$TYPEP$&gt; {&#10;    this.name = name&#10;    $END$&#10;}&#10;&#10;/**&#10; * Installs a new [$NAME$Decorator].&#10; */&#10;fun $TYPE$ StoreBuilder&lt;$TYPEP$&gt;.$NAME$(&#10;    name: String? = &quot;$DecoratorName$Decorator&quot;,&#10;) = install($NAME$Decorator(name))&#10;"
         shortcut="ENTER" description="FlowMVI Decorator" toReformat="true" toShortenFQNames="true">
         <variable name="TYPE" expression=""
             defaultValue="&quot;&lt;S : MVIState, I : MVIIntent, A : MVIAction&gt;&quot;" alwaysStopAt="true" />

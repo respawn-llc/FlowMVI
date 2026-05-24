@@ -10,7 +10,6 @@ import kotlinx.coroutines.Job
 import pro.respawn.flowmvi.android.subscribe
 import pro.respawn.flowmvi.api.ActionConsumer
 import pro.respawn.flowmvi.api.Consumer
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -24,7 +23,6 @@ import pro.respawn.flowmvi.api.Store
  *  @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  *  @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> Fragment.subscribe(
     store: Store<S, I, A>,
     noinline consume: suspend (action: A) -> Unit,
@@ -43,7 +41,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> Fragment.subscrib
  *  @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  *  @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> Fragment.subscribe(
     store: Store<S, I, A>,
     crossinline render: suspend (state: S) -> Unit,
@@ -59,7 +56,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> Fragment.subscrib
  *  @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  *  @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
 ): Job where T : Fragment, T : StateConsumer<S>, T : ActionConsumer<A>, T : Consumer<S, I, A> =
@@ -70,7 +66,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
  * @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  * @see repeatOnLifecycle
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
 ): Job where T : LifecycleOwner, T : Consumer<S, I, A> =
@@ -81,7 +76,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
  * @param lifecycleState the minimum lifecycle state the [LifecycleOwner] must be in to receive updates.
  * @see repeatOnLifecycle
  */
-@FlowMVIDSL
 @JvmName("subscribeAndConsume")
 public fun <S : MVIState, I : MVIIntent, A : MVIAction, T> T.subscribe(
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,

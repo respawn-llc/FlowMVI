@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -59,13 +58,11 @@ public sealed interface BatchingMode {
  * Observe [queue] to get the current queue.
  */
 public class BatchQueue<I : MVIIntent> {
-
     private val _queue = MutableStateFlow<List<I>>(emptyList())
     public val queue: StateFlow<List<I>> = _queue.asStateFlow()
 
     @IgnorableReturnValue
     internal fun push(intent: I) = _queue.update { it + intent }
-
     internal fun pushAndFlushIfReached(intent: I, size: Int): List<I> {
         var flushed = emptyList<I>()
         _queue.update { current ->
@@ -99,7 +96,6 @@ public class BatchQueue<I : MVIIntent> {
  * By default the callback is a no-op, preserving the previous behaviour where unhandled intents were dropped.
  */
 @ExperimentalFlowMVIAPI
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
     mode: BatchingMode,
     queue: BatchQueue<I> = BatchQueue(),
@@ -159,7 +155,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
  *
  * @param onUnhandledIntent see [batchIntentsDecorator] for semantics.
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.batchIntents(
     mode: BatchingMode,

@@ -8,7 +8,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.supervisorScope
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -25,10 +24,8 @@ import pro.respawn.flowmvi.util.concurrentMutableMap
 public class JobManager<K : Any> {
 
     internal companion object {
-
         internal const val Name = "JobManagerPlugin"
     }
-
     private val jobs = concurrentMutableMap<K, Job>()
 
     /** Returns true if this manager has any active jobs, false otherwise. */
@@ -171,14 +168,12 @@ public class JobManager<K : Any> {
  * Same as [JobManager.put].
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public fun <K : Any> Job.register(manager: JobManager<K>, key: K): Job = apply { manager[key] = this }
 
 /**
  * Same as [JobManager.putOrReplace].
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public suspend fun <K : Any> Job.registerOrReplace(
     manager: JobManager<K>,
     key: K,
@@ -190,7 +185,6 @@ public suspend fun <K : Any> Job.registerOrReplace(
  *
  * By default, job managers can't be reused without overriding [name].
  */
-@FlowMVIDSL
 public fun <K : Any, S : MVIState, I : MVIIntent, A : MVIAction> jobManagerPlugin(
     manager: JobManager<K>,
     name: String? = JobManager.Name, // by default, do not allow duplicates
@@ -210,7 +204,6 @@ public fun <K : Any, S : MVIState, I : MVIIntent, A : MVIAction> jobManagerPlugi
  *
  * @return the [JobManager] instance that was created for this plugin.
  */
-@FlowMVIDSL
 public fun <K : Any, A : MVIAction, I : MVIIntent, S : MVIState> StoreBuilder<S, I, A>.manageJobs(
     jobs: JobManager<K> = JobManager(),
     name: String = JobManager.Name

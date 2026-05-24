@@ -2,7 +2,6 @@ package pro.respawn.flowmvi.plugins.delegate
 
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.annotation.InternalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -32,7 +31,6 @@ import pro.respawn.flowmvi.plugins.compositePlugin
  *
  * @return A store plugin that can be installed in the principal store
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <
     S : MVIState,
@@ -86,7 +84,6 @@ public fun <
  *
  * @return A [StoreDelegate] instance that can be used to access the delegate store's state
  */
-@FlowMVIDSL
 @OptIn(InternalFlowMVIAPI::class)
 @ExperimentalFlowMVIAPI
 public fun <

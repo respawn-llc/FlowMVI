@@ -7,7 +7,6 @@ import com.arkivanov.essenty.instancekeeper.InstanceKeeperOwner
 import com.arkivanov.essenty.instancekeeper.getOrCreate
 import kotlinx.coroutines.CoroutineScope
 import pro.respawn.flowmvi.api.Container
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -24,12 +23,11 @@ import kotlin.reflect.typeOf
  * * By default, uses a [retainedScope] instance to launch the store automatically.
  *   Provide `null` to not launch the store after creation.
  */
-@FlowMVIDSL
 @JvmName("retainedInstanceKeeperStoreFactory")
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeper.retainedStore(
     key: Any,
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference factory: () -> Store<S, I, A>,
+    factory: () -> Store<S, I, A>,
 ): Store<S, I, A> = getOrCreate(key) { retained(factory(), scope) }
 
 /**
@@ -39,10 +37,9 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeper.re
  * * By default, uses a [retainedScope] instance to launch the store automatically.
  *   Provide `null` to not launch the store after creation.
  */
-@FlowMVIDSL
 public inline fun <reified S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeper.retainedStore(
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference factory: () -> Store<S, I, A>,
+    factory: () -> Store<S, I, A>,
 ): Store<S, I, A> = retainedStore(typeOf<S>(), scope, factory)
 
 // endregion
@@ -56,12 +53,11 @@ public inline fun <reified S : MVIState, I : MVIIntent, A : MVIAction> InstanceK
  * * By default, uses a [retainedScope] instance to launch the store automatically.
  *   Provide `null` to not launch the store after creation.
  */
-@FlowMVIDSL
 @JvmName("retainedInstanceKeeperOwnerStoreFactory")
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeperOwner.retainedStore(
     key: Any,
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference factory: () -> Store<S, I, A>,
+    factory: () -> Store<S, I, A>,
 ): Store<S, I, A> = instanceKeeper.retainedStore(key, scope, factory)
 
 /**
@@ -70,10 +66,9 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeperOwn
  * * By default, uses a [retainedScope] instance to launch the store automatically.
  *   Provide `null` to not launch the store after creation.
  */
-@FlowMVIDSL
 public inline fun <reified S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeperOwner.retainedStore(
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference factory: () -> Store<S, I, A>,
+    factory: () -> Store<S, I, A>,
 ): Store<S, I, A> = retainedStore(typeOf<S>(), scope, factory)
 
 // endregion
@@ -86,12 +81,11 @@ public inline fun <reified S : MVIState, I : MVIIntent, A : MVIAction> InstanceK
  * * By default, uses a [retainedScope] instance to launch the store automatically.
  *   Provide `null` to not launch the store after creation.
  */
-@FlowMVIDSL
 @JvmName("retainedContainerFactory")
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeperOwner.retainedStore(
     key: Any,
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference factory: () -> Container<S, I, A>,
+    factory: () -> Container<S, I, A>,
 ): Store<S, I, A> = instanceKeeper.retainedStore(
     key = key, scope = scope
 ) { factory().store }
@@ -103,11 +97,10 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeperOwn
  * * By default, uses a [retainedScope] instance to launch the store automatically.
  *   Provide `null` to not launch the store after creation.
  */
-@FlowMVIDSL
 @JvmName("subscribeContainerFactory")
 public inline fun <reified S : MVIState, I : MVIIntent, A : MVIAction> InstanceKeeperOwner.retainedStore(
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference factory: () -> Container<S, I, A>,
+    factory: () -> Container<S, I, A>,
 ): Store<S, I, A> = instanceKeeper.retainedStore(scope) { factory().store }
 
 // endregion

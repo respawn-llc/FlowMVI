@@ -7,7 +7,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.DelicateStoreApi
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -38,7 +37,6 @@ public data class RetryStrategy private constructor(
     val base: Double,
     val delayInitially: Boolean,
 ) {
-
     internal fun shouldRetry(attempt: Int) = attempt <= retries
     internal fun delay(attempt: Int) = when {
         attempt == FirstAttempt && !delayInitially -> Duration.ZERO
@@ -59,7 +57,6 @@ public data class RetryStrategy private constructor(
      *  Defaults
      */
     public companion object {
-
         @PublishedApi
         internal const val FirstAttempt: Int = 1
 
@@ -124,7 +121,6 @@ public data class RetryStrategy private constructor(
  *
  * @see retryActionsDecorator
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecorator(
     strategy: RetryStrategy,
@@ -152,7 +148,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecor
  *
  * @see retryIntentsDecorator
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecorator(
     strategy: RetryStrategy,
@@ -179,7 +174,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecor
  * @see retryActions
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.retryIntents(
     strategy: RetryStrategy = RetryStrategy.Default,
@@ -196,7 +190,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I
  * @see retryIntents
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.retryActions(
     strategy: RetryStrategy = RetryStrategy.Default,

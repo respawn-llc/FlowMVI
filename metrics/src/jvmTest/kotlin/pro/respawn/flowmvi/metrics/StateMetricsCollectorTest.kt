@@ -68,6 +68,18 @@ class StateMetricsCollectorTest : FreeSpec({
         }
     }
 
+    "State.timeToFirstState reset clears prior value" {
+        testCollectorWithTime { collector, _, ts ->
+            onStart()
+            ts.advanceBy(12.milliseconds)
+            onState(TestState(0), TestState(1))
+            collector.snapshot().state.timeToFirstState shouldBe 12.milliseconds
+
+            collector.reset()
+            collector.snapshot().state.timeToFirstState shouldBe null
+        }
+    }
+
     "State.transitions is 0 when no updates" {
         testCollectorWithTime { collector, _, _ ->
             onStart()

@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -38,7 +37,6 @@ import kotlin.coroutines.CoroutineContext
  * * The [path] lambda is only invoked when saving or restoring state, on a background thread.
  */
 @OptIn(ExperimentalSerializationApi::class)
-@FlowMVIDSL
 public inline fun <reified T : S, reified S : MVIState, I : MVIIntent, A : MVIAction> serializeStatePlugin(
     noinline path: suspend () -> String,
     serializer: KSerializer<T>,
@@ -85,7 +83,6 @@ public inline fun <reified T : S, reified S : MVIState, I : MVIIntent, A : MVIAc
     )
 )
 @OptIn(ExperimentalSerializationApi::class)
-@FlowMVIDSL
 public inline fun <reified T : S, reified S : MVIState, I : MVIIntent, A : MVIAction> serializeStatePlugin(
     path: String,
     serializer: KSerializer<T>,
@@ -116,7 +113,6 @@ public inline fun <reified T : S, reified S : MVIState, I : MVIIntent, A : MVIAc
 @OptIn(ExperimentalSerializationApi::class)
 @Suppress("Indentation") // detekt <> IDE conflict
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <
     reified T : S,
     reified S : MVIState,
@@ -160,7 +156,6 @@ public inline fun <
 @OptIn(ExperimentalSerializationApi::class)
 @Suppress("Indentation") // detekt <> IDE conflict
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <
     reified T : S,
     reified S : MVIState,

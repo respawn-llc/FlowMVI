@@ -8,7 +8,6 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import pro.respawn.flowmvi.api.Container
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.ImmutableContainer
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -27,7 +26,6 @@ import kotlin.jvm.JvmName
  * @see subscribe
  */
 @Composable
-@FlowMVIDSL
 @JvmName("subscribe1")
 public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> T.subscribe(
     lifecycleState: Lifecycle.State = Lifecycle.State.CREATED,
@@ -43,7 +41,6 @@ public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> T.subscribe(
  * @see subscribe
  */
 @Composable
-@FlowMVIDSL
 @JvmName("subscribe2")
 @Suppress("ComposableParametersOrdering")
 public fun <T, S : MVIState, I : MVIIntent, A : MVIAction> T.subscribe(

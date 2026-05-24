@@ -2,7 +2,6 @@
 
 package pro.respawn.flowmvi.plugins
 
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -20,7 +19,6 @@ import pro.respawn.flowmvi.impl.plugin.compose
  *
  * The [plugins] list must support random element access in order to be performant
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> compositePlugin(
     plugins: List<StorePlugin<S, I, A>>,
     name: String? = null,
@@ -34,7 +32,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> compositePlugin(
  *
  * This is an implementation of the "Composite" pattern and the "Chain or Responsibility" pattern.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> compositePlugin(
     first: StorePlugin<S, I, A>,
     vararg other: StorePlugin<S, I, A>,

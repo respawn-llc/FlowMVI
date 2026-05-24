@@ -7,7 +7,6 @@ import androidx.compose.runtime.State
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.arkivanov.essenty.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.ImmutableStore
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -28,7 +27,6 @@ import kotlin.jvm.JvmName
 @Suppress("ComposableParametersOrdering")
 @JvmName("subscribe3")
 @Composable
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.subscribe(
     lifecycleOwner: LifecycleOwner,
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
@@ -46,7 +44,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.
  * @see subscribe
  */
 @Composable
-@FlowMVIDSL
 @JvmName("subscribe4")
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.subscribe(
     lifecycleOwner: LifecycleOwner,

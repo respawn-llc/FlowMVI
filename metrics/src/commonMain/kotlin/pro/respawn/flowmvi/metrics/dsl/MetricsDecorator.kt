@@ -3,7 +3,6 @@ package pro.respawn.flowmvi.metrics.dsl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -16,7 +15,6 @@ import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
-
 private const val DefaultDecoratorName: String = "MetricsDecorator"
 
 /**
@@ -26,7 +24,6 @@ private const val DefaultDecoratorName: String = "MetricsDecorator"
  *
  * Install the resulting decorator into a store to start collecting metrics.
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsDecorator(
     metrics: DefaultMetrics<S, I, A>,
@@ -36,7 +33,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsDecorator(
 /**
  * Install a new [metricsDecorator]
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.collectMetrics(
     metrics: DefaultMetrics<S, I, A>,
@@ -54,7 +50,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.co
  * Do NOT pass the same or short-lived [reportingScope] to this method. The scope should have a longer lifetime to
  * reliably collect metrics while the store is closed or restarted. More details are in the [metrics] definition
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.collectMetrics(
     reportingScope: CoroutineScope,

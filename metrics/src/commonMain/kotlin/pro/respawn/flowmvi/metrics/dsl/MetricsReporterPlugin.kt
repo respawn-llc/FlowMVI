@@ -8,7 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -22,7 +21,6 @@ import pro.respawn.flowmvi.metrics.api.MetricsSnapshot
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-
 private const val DefaultName: String = "MetricsReporter"
 
 /**
@@ -43,7 +41,6 @@ private const val DefaultName: String = "MetricsReporter"
  *
  * @param sink destination [pro.respawn.flowmvi.metrics.api.Sink] for snapshots.
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsReporter(
     metrics: Metrics,
@@ -87,7 +84,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsReporter(
  *
  * @param sink destination [pro.respawn.flowmvi.metrics.api.Sink] for snapshots.
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsReporter(
     builder: DefaultMetrics<S, I, A>,
@@ -108,7 +104,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsReporter(
 /**
  * Install a new [metricsReporter] into the current [pro.respawn.flowmvi.api.Store].
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.reportMetrics(
     metrics: Metrics,
@@ -133,7 +128,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.re
 /**
  * Install a new [metricsReporter] into the current [pro.respawn.flowmvi.api.Store].
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.reportMetrics(
     metrics: DefaultMetrics<S, I, A>,

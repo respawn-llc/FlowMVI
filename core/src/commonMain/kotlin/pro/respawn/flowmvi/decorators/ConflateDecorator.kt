@@ -4,7 +4,6 @@ package pro.respawn.flowmvi.decorators
 
 import kotlinx.atomicfu.atomic
 import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -14,7 +13,6 @@ import pro.respawn.flowmvi.dsl.StoreBuilder
 
 @PublishedApi
 internal class Conflated<T : Any> {
-
     private val value = atomic<T?>(null)
 
     @IgnorableReturnValue
@@ -30,7 +28,6 @@ internal class Conflated<T : Any> {
  * The first intent since the store has started will never be dropped, then
  * if the compare function returns true for the last sent event and the current one, the event will be dropped.
  */
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateIntentsDecorator(
     name: String? = "ConflateIntents",
@@ -80,7 +77,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateActionsDe
  * Returns a new [conflateIntentsDecorator] for all intents in this store.
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.conflateIntents(
     name: String? = "ConflateIntents",
@@ -91,7 +87,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I
  * Installs a new [conflateActionsDecorator] for all actions in this store.
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 @ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.conflateActions(
     name: String? = "ConflateActions",

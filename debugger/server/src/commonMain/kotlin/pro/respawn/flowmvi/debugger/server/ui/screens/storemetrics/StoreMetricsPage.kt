@@ -362,7 +362,7 @@ private fun formatCount(v: Float): String {
 }
 
 @Composable
-@androidx.compose.desktop.ui.tooling.preview.Preview
+@Preview
 private fun StoreMetricsPagePreview() = RespawnTheme {
     RScaffold {
         val now = Clock.System.now()

@@ -42,7 +42,6 @@ import pro.respawn.flowmvi.util.setOnce
 @Suppress("TooManyFunctions")
 @FlowMVIDSL
 public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @PublishedApi internal constructor() {
-
     private var _onIntent: DecorateValue<S, I, A, I>? = null
     private var _onIntentEnqueue: DecorateValueNonSuspend<S, I, A, I>? = null
     private var _onState: DecorateState<S, I, A>? = null
@@ -72,7 +71,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onStart(block: Decorate<S, I, A>): Unit = ::_onStart.setOnce(block)
 
     /**
@@ -85,7 +83,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onIntentEnqueue(block: DecorateValueNonSuspend<S, I, A, I>): Unit = ::_onIntentEnqueue.setOnce(block)
 
     /**
@@ -101,7 +98,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onIntent(block: DecorateValue<S, I, A, I>): Unit = ::_onIntent.setOnce(block)
 
     /**
@@ -117,7 +113,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onState(block: DecorateState<S, I, A>): Unit = ::_onState.setOnce(block)
 
     /**
@@ -133,7 +128,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onAction(block: DecorateValue<S, I, A, A>): Unit = ::_onAction.setOnce(block)
 
     /**
@@ -146,7 +140,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onActionDispatch(block: DecorateValueNonSuspend<S, I, A, A>): Unit = ::_onActionDispatch.setOnce(block)
 
     /**
@@ -162,7 +155,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onException(block: DecorateValue<S, I, A, Exception>): Unit = ::_onException.setOnce(block)
 
     /**
@@ -175,7 +167,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onSubscribe(block: DecorateArg<S, I, A, Int>): Unit = ::_onSubscribe.setOnce(block)
 
     /**
@@ -188,7 +179,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onUnsubscribe(block: DecorateArg<S, I, A, Int>): Unit = ::_onUnsubscribe.setOnce(block)
 
     /**
@@ -202,7 +192,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onStop(block: DecorateShutdown<S, I, A, Exception?>): Unit = ::_onStop.setOnce(block)
 
     /**
@@ -215,7 +204,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onUndeliveredIntent(block: DecorateShutdown<S, I, A, I>): Unit = ::_onUndeliveredIntent.setOnce(block)
 
     /**
@@ -228,7 +216,6 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
-    @FlowMVIDSL
     public fun onUndeliveredAction(block: DecorateShutdown<S, I, A, A>): Unit = ::_onUndeliveredAction.setOnce(block)
 
     @PublishedApi

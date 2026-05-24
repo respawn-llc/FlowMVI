@@ -4,7 +4,6 @@ package pro.respawn.flowmvi.plugins
 
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -36,12 +35,11 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @see StorePlugin.onSubscribe
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> whileSubscribedPlugin(
     name: String? = null,
     minSubscriptions: Int = 1,
     stopDelay: Duration = 1.seconds,
-    @BuilderInference crossinline block: suspend PipelineContext<S, I, A>.() -> Unit,
+    crossinline block: suspend PipelineContext<S, I, A>.() -> Unit,
 ): StorePlugin<S, I, A> = plugin {
     require(minSubscriptions > 0) { "Minimum number of subscribers must be greater than 0, got: $minSubscriptions" }
     require(stopDelay.isFinite() && !stopDelay.isNegative()) { "stopDelay must be non-negative, got: $stopDelay" }
@@ -57,10 +55,9 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> whileSubscribedPl
  * Create and install a new [whileSubscribedPlugin]. See the parent's function docs for more info.
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.whileSubscribed(
     name: String? = null,
     minSubscriptions: Int = 1,
     stopDelay: Duration = 1.seconds,
-    @BuilderInference crossinline block: suspend PipelineContext<S, I, A>.() -> Unit,
+    crossinline block: suspend PipelineContext<S, I, A>.() -> Unit,
 ): Unit = install(whileSubscribedPlugin(name, minSubscriptions, stopDelay, block))

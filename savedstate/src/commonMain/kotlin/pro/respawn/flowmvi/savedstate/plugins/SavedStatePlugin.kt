@@ -8,7 +8,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -61,7 +60,6 @@ import kotlin.coroutines.EmptyCoroutineContext
  *
  *  @see [Saver]
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> saveStatePlugin(
     saver: Saver<S>,
     context: CoroutineContext = EmptyCoroutineContext,
@@ -73,7 +71,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> saveStatePlugin(
     this.name = name
     var job: Job? by atomic(null)
     val saver = LoggingSaver(saver, config.logger, tag = config.name)
-
     val saveDelay = behaviors
         .asSequence()
         .filterIsInstance<Periodic>()
@@ -97,7 +94,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> saveStatePlugin(
         withContext(this + context) { saver.save(null) }
         it
     }
-
     val maxSubscribers = behaviors
         .asSequence()
         .filterIsInstance<OnUnsubscribe>()
@@ -109,7 +105,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> saveStatePlugin(
         job?.cancelAndJoin()
         job = launch(context) { withState { saver.save(this) } }
     }
-
     val saveTimeout = behaviors
         .asSequence()
         .filterIsInstance<OnChange>()
@@ -135,7 +130,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> saveStatePlugin(
  * @see saveStatePlugin
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public inline fun <reified S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.saveState(
     saver: Saver<S>,
     context: CoroutineContext = EmptyCoroutineContext,

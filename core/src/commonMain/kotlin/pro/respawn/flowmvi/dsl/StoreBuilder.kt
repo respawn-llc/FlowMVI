@@ -20,7 +20,6 @@ import pro.respawn.flowmvi.plugins.compositePlugin
 import kotlin.jvm.JvmName
 
 public typealias BuildStore<S, I, A> = StoreBuilder<S, I, A>.() -> Unit
-
 private fun duplicatePluginMessage(type: String, name: String): String {
     val title = type.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     return """
@@ -44,18 +43,15 @@ private fun duplicatePluginMessage(type: String, name: String): String {
 public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @PublishedApi internal constructor(
     public val initial: S,
 ) {
-
     @PublishedApi
     internal var config: StoreConfigurationBuilder = StoreConfigurationBuilder()
         private set
-
     private var plugins: MutableSet<LazyPlugin<S, I, A>> = mutableSetOf()
     private var decorators: MutableSet<PluginDecorator<S, I, A>> = mutableSetOf()
 
     /**
      * Adjust the current [StoreConfiguration] of this [Store].
      */
-    @FlowMVIDSL
     public inline fun configure(block: StoreConfigurationBuilder.() -> Unit): Unit = config.run(block)
 
     // region Plugins
@@ -69,7 +65,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      * Installation of the same plugin multiple times is **not allowed**.
      * See [StorePlugin.name] for more info and solutions.
      */
-    @FlowMVIDSL
     public infix fun install(plugins: Iterable<LazyPlugin<S, I, A>>): Unit = plugins.forEach {
         require(this.plugins.add(it)) { duplicatePluginMessage("plugin", it.toString()) }
     }
@@ -84,7 +79,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      * Installation of the same plugin multiple times is **not allowed**.
      * See [StorePlugin.name] for more info and solutions.
      */
-    @FlowMVIDSL
     public fun install(
         plugin: LazyPlugin<S, I, A>,
         vararg other: LazyPlugin<S, I, A>,
@@ -95,7 +89,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      * Please see documentation for the other overload for more details.
      * @see install
      */
-    @FlowMVIDSL
     public inline infix fun install(
         crossinline block: LazyPluginBuilder<S, I, A>.() -> Unit
     ): Unit = install(lazyPlugin(block))
@@ -103,7 +96,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
     /**
      * Alias for [install]
      */
-    @FlowMVIDSL
     public fun LazyPlugin<S, I, A>.install(): Unit = install(this)
 
     // endregion
@@ -120,7 +112,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      *
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
-    @FlowMVIDSL
     @JvmName("decorate")
     @ExperimentalFlowMVIAPI
     public infix fun install(decorators: Iterable<PluginDecorator<S, I, A>>): Unit = decorators.forEach {
@@ -137,7 +128,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      *
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
-    @FlowMVIDSL
     @JvmName("decorate")
     @ExperimentalFlowMVIAPI
     public fun install(decorator: PluginDecorator<S, I, A>, vararg other: PluginDecorator<S, I, A>) {
@@ -154,8 +144,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      *
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
-
-    @FlowMVIDSL
     @ExperimentalFlowMVIAPI
     public inline infix fun decorate(block: DecoratorBuilder<S, I, A>.() -> Unit): Unit = install(decorator(block))
 
@@ -169,7 +157,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      *
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
-    @FlowMVIDSL
     @JvmName("decorate")
     @ExperimentalFlowMVIAPI
     public fun PluginDecorator<S, I, A>.install(): Unit = install(this)
@@ -179,7 +166,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
     // it's important to first convert the collection to an immutable before iterating, or the
     // iterator will throw
     @PublishedApi
-    @FlowMVIDSL
     internal operator fun invoke(): Store<S, I, A> = config(initial).let { config ->
         StoreImpl(
             config = config,

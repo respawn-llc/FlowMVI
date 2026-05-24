@@ -4,7 +4,6 @@ import com.arkivanov.essenty.instancekeeper.InstanceKeeper
 import com.arkivanov.essenty.instancekeeper.InstanceKeeperOwner
 import kotlinx.coroutines.CoroutineScope
 import pro.respawn.flowmvi.api.Container
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -21,13 +20,12 @@ import pro.respawn.flowmvi.essenty.api.DelicateRetainedApi
  *
  * See [store] for more details.
  */
-@FlowMVIDSL
 @DelicateRetainedApi
 public inline fun <T, S : MVIState, I : MVIIntent, A : MVIAction> T.retainedStore(
     initial: S,
     key: Any,
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference builder: BuildStore<S, I, A>,
+    builder: BuildStore<S, I, A>,
 ): Store<S, I, A> where T : Container<S, I, A>, T : InstanceKeeperOwner = instanceKeeper.retainedStore(
     initial, key, scope, builder
 )
@@ -41,12 +39,11 @@ public inline fun <T, S : MVIState, I : MVIIntent, A : MVIAction> T.retainedStor
  *
  * See [store] for more details.
  */
-@FlowMVIDSL
 @DelicateRetainedApi
 public inline fun <T, reified S : MVIState, I : MVIIntent, A : MVIAction> T.retainedStore(
     initial: S,
     scope: CoroutineScope? = retainedScope(),
-    @BuilderInference builder: BuildStore<S, I, A>,
+    builder: BuildStore<S, I, A>,
 ): Store<S, I, A> where T : Container<S, I, A>, T : InstanceKeeperOwner = instanceKeeper.retainedStore(
     initial, scope, builder
 )

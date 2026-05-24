@@ -12,7 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.respawn.flowmvi.api.DelicateStoreApi
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.ImmutableStore
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -41,7 +40,6 @@ import kotlin.jvm.JvmName
  */
 @Suppress("ComposableParametersOrdering")
 @Composable
-@FlowMVIDSL
 @JvmName("subscribeConsume")
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.subscribe(
     lifecycle: SubscriberLifecycle = DefaultLifecycle,
@@ -76,7 +74,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.
  * @see subscribe
  */
 @Composable
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> ImmutableStore<S, I, A>.subscribe(
     lifecycle: SubscriberLifecycle = DefaultLifecycle,
     mode: SubscriptionMode = SubscriptionMode.Started,

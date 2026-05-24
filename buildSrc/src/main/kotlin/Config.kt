@@ -54,15 +54,11 @@ object Config {
         "-Xwarning-level=NOTHING_TO_INLINE:disabled",
         "-Xwarning-level=UNUSED_ANONYMOUS_PARAMETER:disabled",
         "-Xcontext-sensitive-resolution",
-        "-Xcontext-parameters",
-        "-Xallow-reified-type-in-catch",
-        "-Xdata-flow-based-exhaustiveness",
         "-Xreturn-value-checker=check",
         // "-Xwhen-guards",
     )
     val jvmCompilerArgs = buildList {
         add("-jvm-default=enable")
-        add("-Xcontext-parameters")
         add("-Xstring-concat=inline")
         add("-Xlambdas=indy")
         add("-Xjdk-release=${jvmTarget.target}")

@@ -2,7 +2,6 @@
 
 package pro.respawn.flowmvi.dsl
 
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -26,9 +25,8 @@ import pro.respawn.flowmvi.api.StorePlugin
  *
  * @see [StorePlugin]
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> lazyPlugin(
-    @BuilderInference crossinline builder: LazyPluginBuilder<S, I, A>.() -> Unit,
+    crossinline builder: LazyPluginBuilder<S, I, A>.() -> Unit,
 ): LazyPlugin<S, I, A> = LazyPlugin {
     LazyPluginBuilder<S, I, A>(it).apply(builder).build()
 }
@@ -48,7 +46,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> lazyPlugin(
  *
  * @see [StorePlugin]
  */
-@FlowMVIDSL
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> plugin(
-    @BuilderInference builder: StorePluginBuilder<S, I, A>.() -> Unit,
+    builder: StorePluginBuilder<S, I, A>.() -> Unit,
 ): StorePlugin<S, I, A> = StorePluginBuilder<S, I, A>().apply(builder).build()

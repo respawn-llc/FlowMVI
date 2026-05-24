@@ -1,6 +1,5 @@
 package pro.respawn.flowmvi.debugger.plugin
 
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -22,7 +21,6 @@ import kotlin.time.Duration
  * Better yet, do not include the debugger-client dependency at all in production builds,
  * because the plugin depends on a lot of things you may not need for your application.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debuggerPlugin(
     historySize: Int = DebuggerDefaults.DefaultHistorySize,
     host: String = DebuggerDefaults.ClientHost,
@@ -48,7 +46,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debuggerPlugin(
  * Better yet, do not include the debugger-client dependency at all in production builds,
  * because the plugin depends on a lot of things you may not need for your application.
  */
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.enableRemoteDebugging(
     historySize: Int = DebuggerDefaults.DefaultHistorySize,
     host: String = DebuggerDefaults.ClientHost,

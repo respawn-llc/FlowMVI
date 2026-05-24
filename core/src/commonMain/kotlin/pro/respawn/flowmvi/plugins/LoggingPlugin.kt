@@ -5,7 +5,6 @@ package pro.respawn.flowmvi.plugins
 
 import pro.respawn.flowmvi.api.ActionShareBehavior
 import pro.respawn.flowmvi.api.DelicateStoreApi
-import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -30,7 +29,6 @@ import kotlin.math.log
  * [pro.respawn.flowmvi.api.Store.name] is used as a tag by default.
  */
 @IgnorableReturnValue
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.enableLogging(
     tag: String? = null,
     level: StoreLogLevel? = null,
@@ -46,7 +44,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.en
  */
 @OptIn(DelicateStoreApi::class)
 @Suppress("CyclomaticComplexMethod") // false-positive based on ternary ops
-@FlowMVIDSL
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> loggingPlugin(
     tag: String? = null,
     level: StoreLogLevel? = null,
