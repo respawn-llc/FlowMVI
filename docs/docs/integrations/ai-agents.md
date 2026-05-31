@@ -25,7 +25,7 @@ curl -L https://opensource.respawn.pro/FlowMVI/quickstart.md
 Install the FlowMVI Claude Code plugin from the Respawn marketplace:
 
 ```text
-/plugin marketplace add respawn-app/claude-plugin-marketplace
+/plugin marketplace add respawn-llc/claude-plugin-marketplace
 /plugin install flowmvi@respawn-tools
 ```
 
