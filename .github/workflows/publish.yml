@@ -120,7 +120,7 @@ jobs:
           test "$windows_count" -eq 1
 
       - name: Create GH release
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         id: create_release
         with:
           draft: true
