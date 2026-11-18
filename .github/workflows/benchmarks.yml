@@ -9,21 +9,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
 
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
 
       - name: set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6.3.0
         with:
           distribution: 'zulu'
           check-latest: true
           java-version: 27
+          problem-matcher: true
           cache: 'gradle'
 
       - name: Validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v5
+        uses: gradle/actions/wrapper-validation@v6.4.1
 
       - name: Create local properties
         env:
@@ -31,7 +32,7 @@ jobs:
         run: echo "$LOCAL_PROPERTIES" | base64 --decode > local.properties
 
       - name: Cache konan directory
-        uses: actions/cache@v5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.konan
           key: ${{ runner.os }}-konan-${{ hashFiles('*.gradle.kts', 'buildSrc/*') }}
