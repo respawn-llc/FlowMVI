@@ -11,6 +11,7 @@ import pro.respawn.flowmvi.api.Container
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
+
 val LocalDestinationScope = staticCompositionLocalOf<DestinationScope> {
     error("Provide a destination scope")
 }

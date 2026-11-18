@@ -77,8 +77,7 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         ctx@{ wrap(this, this@decorate, it) }
     },
     onIntentEnqueue = wrapNotNull(onIntentEnqueue, decorator.onIntentEnqueue) { wrap ->
-        {
-                intent ->
+        { intent ->
             wrap(this@decorate, intent)
         }
     },
@@ -86,8 +85,7 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         ctx@{ wrap(this, this@decorate, it) }
     },
     onActionDispatch = wrapNotNull(onActionDispatch, decorator.onActionDispatch) { wrap ->
-        {
-                action ->
+        { action ->
             wrap(this@decorate, action)
         }
     },

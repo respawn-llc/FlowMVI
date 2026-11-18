@@ -90,6 +90,7 @@ fun RScaffold(
 
 @Composable
 fun RScaffold(
+    topBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState? = null,
     containerColor: Color = RScaffoldDefaults.containerColor,
@@ -100,7 +101,6 @@ fun RScaffold(
     fadeContent: Boolean = true,
     bottomBar: @Composable () -> Unit = {},
     fab: @Composable () -> Unit = {},
-    topBar: @Composable () -> Unit,
     content: @Composable BoxScope.() -> Unit,
 ) {
     Scaffold(

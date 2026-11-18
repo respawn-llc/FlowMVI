@@ -174,9 +174,7 @@ class RecoveringSaverTest : FreeSpec({
                     var deprecatedRecoverCallCount = 0
 
                     val delegateSaver = object : Saver<String> {
-                        override suspend fun save(state: String?) {
-                            throw testException
-                        }
+                        override suspend fun save(state: String?): Unit = throw testException
                         override suspend fun restore(): String = "restored"
 
                         @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
@@ -199,9 +197,7 @@ class RecoveringSaverTest : FreeSpec({
 
                     val delegateSaver = object : Saver<String> {
                         override suspend fun save(state: String?) {}
-                        override suspend fun restore(): String? {
-                            throw testException
-                        }
+                        override suspend fun restore(): String? = throw testException
 
                         @Suppress("DEPRECATION")
                         override suspend fun recover(e: Exception): String? {
@@ -225,9 +221,7 @@ class RecoveringSaverTest : FreeSpec({
                     var deprecatedRecoverCallCount = 0
 
                     val delegateSaver = object : Saver<String> {
-                        override suspend fun save(state: String?) {
-                            throw testException
-                        }
+                        override suspend fun save(state: String?): Unit = throw testException
                         override suspend fun restore(): String? = "restored"
 
                         @Suppress("DEPRECATION")
@@ -253,9 +247,7 @@ class RecoveringSaverTest : FreeSpec({
 
                     val delegateSaver = object : Saver<String> {
                         override suspend fun save(state: String?) {}
-                        override suspend fun restore(): String? {
-                            throw testException
-                        }
+                        override suspend fun restore(): String? = throw testException
 
                         @Suppress("DEPRECATION")
                         override suspend fun recover(e: Exception): String? {
@@ -280,12 +272,8 @@ class RecoveringSaverTest : FreeSpec({
                     var deprecatedRecoverCallCount = 0
 
                     val delegateSaver = object : Saver<String> {
-                        override suspend fun save(state: String?) {
-                            throw testException
-                        }
-                        override suspend fun restore(): String? {
-                            throw testException
-                        }
+                        override suspend fun save(state: String?): Unit = throw testException
+                        override suspend fun restore(): String? = throw testException
 
                         @Suppress("DEPRECATION")
                         override suspend fun recover(e: Exception): String? {

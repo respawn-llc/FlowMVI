@@ -4,12 +4,12 @@ activity = "1.13.0"
 #noinspection GradleDependency - must match jb-lifecycle
 androidx-lifecycle = "2.9.2"
 compose = "1.11.0"
-composeDetektPlugin = "1.4.0"
+composeDetektPlugin = "2.2.0"
 composeMaterial3 = "1.9.0"
 core-ktx = "1.13.1"
 coroutines = "1.11.0"
 datetime = "0.8.0-0.6.x-compat"
-detekt = "1.23.8"
+detekt = "2.0.0-alpha.6"
 dokka = "2.2.0"
 essenty = "2.5.0"
 fragment = "1.8.9"
@@ -55,10 +55,10 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
-detekt-compose = { module = "ru.kode:detekt-rules-compose", version.ref = "composeDetektPlugin" }
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
+detekt-compose = { module = "ru.kode:detekt-rules-compose-detekt2", version.ref = "composeDetektPlugin" }
+detekt-formatting = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+detekt-gradle = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-libraries = { module = "dev.detekt:detekt-rules-libraries", version.ref = "detekt" }
 dokka-android = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
 dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 essenty-instancekeeper = { module = "com.arkivanov.essenty:instance-keeper", version.ref = "essenty" }
@@ -155,7 +155,7 @@ androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library",
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlinx-atomicfu" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 intellij-ide = { id = "org.jetbrains.intellij.platform", version.ref = "intellij-ide-plugin" }
 kotest = { id = "io.kotest.multiplatform", version.ref = "kotest" }

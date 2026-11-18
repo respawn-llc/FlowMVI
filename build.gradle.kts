@@ -2,6 +2,8 @@ import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.MavenPublishBasePlugin
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.extensions.DetektExtension
 import nl.littlerobots.vcu.plugin.versionCatalogUpdate
 import nl.littlerobots.vcu.plugin.versionSelector
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
@@ -99,7 +101,6 @@ subprojects {
 dependencies {
     detektPlugins(rootProject.libs.detekt.formatting)
     detektPlugins(rootProject.libs.detekt.compose)
-    detektPlugins(rootProject.libs.detekt.libraries)
     projects.run {
         listOf(
             core,
@@ -132,33 +133,57 @@ versionCatalogUpdate {
     }
 }
 
+val detektSources = fileTree(layout.projectDirectory) {
+    include(Config.Detekt.includedFiles)
+    exclude(Config.Detekt.excludedFiles)
+}
+
+val detektLibraryConfig = layout.projectDirectory.file("detekt-libraries.yml")
+
+detekt {
+    buildUponDefaultConfig.set(true)
+    parallel.set(true)
+    config.setFrom(layout.projectDirectory.file(Config.Detekt.configFile))
+    source.setFrom(detektSources)
+}
+
+val detektAll = tasks.register<Detekt>("detektAll") {
+    description = "Run detekt on whole project"
+}
+
+subprojects {
+    plugins.withType<MavenPublishBasePlugin> {
+        // Whole-tree lint is syntax-only; published libraries need their compilation classpaths.
+        pluginManager.apply("dev.detekt")
+        dependencies.add("detektPlugins", rootProject.libs.detekt.libraries)
+        extensions.configure<DetektExtension> {
+            config.setFrom(detektLibraryConfig)
+            buildUponDefaultConfig.set(true)
+            disableDefaultRuleSets.set(true)
+        }
+        val libraryAnalysis = tasks.withType<Detekt>().matching {
+            it.name == "detektMainJvm" || it.name == "detektMainAndroid"
+        }
+        detektAll.configure { dependsOn(libraryAnalysis) }
+    }
+}
+
 tasks {
-    withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-        buildUponDefaultConfig = true
-        parallel = true
-        setSource(projectDir)
-        config.setFrom(File(rootDir, Config.Detekt.configFile))
-        basePath = projectDir.absolutePath
-        jvmTarget = Config.jvmTarget.target
-        include(Config.Detekt.includedFiles)
-        exclude(Config.Detekt.excludedFiles)
+    withType<Detekt>().configureEach {
+        setSource(detektSources)
+        jvmTarget.set(Config.jvmTarget.target)
+        multiPlatformEnabled.set(true)
         reports {
-            xml.required.set(false)
+            checkstyle.required.set(false)
             html.required.set(true)
-            txt.required.set(false)
             sarif.required.set(true)
-            md.required.set(false)
+            markdown.required.set(false)
         }
     }
 
-    register<io.gitlab.arturbosch.detekt.Detekt>("detektFormat") {
+    register<Detekt>("detektFormat") {
         description = "Formats whole project."
-        autoCorrect = true
-    }
-
-    register<io.gitlab.arturbosch.detekt.Detekt>("detektAll") {
-        description = "Run detekt on whole project"
-        autoCorrect = false
+        autoCorrect.set(true)
     }
 }
 

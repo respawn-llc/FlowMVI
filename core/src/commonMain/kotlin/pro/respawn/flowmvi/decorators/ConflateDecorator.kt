@@ -16,7 +16,7 @@ internal class Conflated<T : Any> {
     private val value = atomic<T?>(null)
 
     @IgnorableReturnValue
-    fun update(with: T?) = value.getAndSet(with)
+    fun update(with: T?): T? = value.getAndSet(with)
 }
 
 /**

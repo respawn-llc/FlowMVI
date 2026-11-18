@@ -7,6 +7,7 @@ import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.StorePlugin
 import pro.respawn.flowmvi.dsl.StoreBuilder
+
 private const val ConsumeIntentsPluginName: String = "ConsumeIntents"
 
 /**

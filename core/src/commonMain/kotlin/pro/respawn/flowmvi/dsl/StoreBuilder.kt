@@ -55,6 +55,7 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
     public inline fun configure(block: StoreConfigurationBuilder.() -> Unit): Unit = config.run(block)
 
     // region Plugins
+
     /**
      * Install [StorePlugin]s. See the other overload to build the plugin on the fly.
      * This installs prebuilt plugins.

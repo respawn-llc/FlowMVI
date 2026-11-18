@@ -36,6 +36,7 @@ import pro.respawn.flowmvi.plugins.TimeTravel
 import pro.respawn.flowmvi.plugins.compositePlugin
 import pro.respawn.flowmvi.plugins.timeTravelPlugin
 import kotlin.time.Duration
+
 @PublishedApi
 internal const val NonDebuggableStoreMessage: String = """
 The debugger has been disabled because store is not debuggable!
@@ -49,7 +50,8 @@ private fun <S : MVIState, I : MVIIntent, A : MVIAction> DebugClientStore.asPlug
     this.name = "${clientKey.orEmpty()}Debugger"
     onStart ctx@{
         start(this)
-        subscribe { // subscribe to store events
+        subscribe {
+            // subscribe to store events
             actions.collectLatest { event ->
                 when (event) {
                     is ResendLastAction -> timeTravel.actions.lastOrNull()?.let { action(it) }

@@ -21,6 +21,7 @@ import pro.respawn.flowmvi.metrics.api.MetricsSnapshot
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+
 private const val DefaultName: String = "MetricsReporter"
 
 /**
