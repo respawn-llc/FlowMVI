@@ -99,12 +99,10 @@ fun Project.configureMultiplatform(
             yield(macosArm64())
         }
         if (tvOs) {
-            yield(tvosX64())
             yield(tvosArm64())
             yield(tvosSimulatorArm64())
         }
         if (watchOs) {
-            yield(watchosX64())
             yield(watchosArm64())
             yield(watchosDeviceArm64())
             yield(watchosSimulatorArm64())
