@@ -22,7 +22,6 @@ plugins {
     alias(libs.plugins.intellij.ide) apply false
     // plugins already on a classpath (conventions)
     // alias(libs.plugins.androidApplication) apply false
-    // alias(libs.plugins.androidLibrary) apply false
     // alias(libs.plugins.kotlin.multiplatform) apply false
     dokkaDocumentation
 }
@@ -51,7 +50,6 @@ subprojects {
                 KotlinMultiplatform(
                     javadocJar = JavadocJar.Empty(),
                     sourcesJar = true,
-                    androidVariantsToPublish = listOf("release"),
                 )
             )
             if (isReleaseBuild) signAllPublications()

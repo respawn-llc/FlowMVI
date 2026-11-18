@@ -1,9 +1,10 @@
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     alias(libs.plugins.kotlin.serialization)
     id(libs.plugins.kotlin.multiplatform.id)
-    id(libs.plugins.androidLibrary.id)
+    id(libs.plugins.androidMultiplatformLibrary.id)
     alias(libs.plugins.maven.publish)
     dokkaDocumentation
 }
@@ -15,7 +16,7 @@ kotlin {
             group("nonBrowser") {
                 withJvm()
                 withNative()
-                withAndroidTarget()
+                withCompilations { it.target is KotlinMultiplatformAndroidLibraryTarget }
             }
             group("browser") {
                 withWasmJs()
@@ -47,7 +48,6 @@ kotlin {
     }
 }
 
-android {
-    configureAndroidLibrary(this)
+kotlin.android {
     namespace = "${Config.namespace}.savedstate"
 }

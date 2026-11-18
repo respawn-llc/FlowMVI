@@ -1,5 +1,6 @@
 @file:Suppress("MissingPackageDeclaration", "unused", "UndocumentedPublicFunction", "LongMethod", "UnusedImports")
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
@@ -12,7 +13,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 fun Project.configureMultiplatform(
     ext: KotlinMultiplatformExtension,
     jvm: Boolean = true,
-    android: Boolean = true,
     linux: Boolean = true,
     iOs: Boolean = true,
     js: Boolean = true,
@@ -63,8 +63,20 @@ fun Project.configureMultiplatform(
         nodejs()
     }
 
-    if (android) androidTarget {
-        publishLibraryVariants("release")
+    targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
+        compileSdk = Config.compileSdk
+        minSdk = Config.minSdk
+        lint.warning.add("AutoboxingStateCreation")
+        withHostTest {
+            isReturnDefaultValues = true
+        }
+        packaging.resources.excludes.addAll(
+            listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "DebugProbesKt.bin",
+                "META-INF/versions/9/previous-compilation-data.bin",
+            )
+        )
         compilerOptions {
             jvmTarget.set(Config.jvmTarget)
             freeCompilerArgs.addAll(Config.jvmCompilerArgs)

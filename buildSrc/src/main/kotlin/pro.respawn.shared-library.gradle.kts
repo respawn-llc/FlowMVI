@@ -3,14 +3,10 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
 }
 
 kotlin {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     configureMultiplatform(this)
-}
-
-android {
-    configureAndroidLibrary(this)
 }

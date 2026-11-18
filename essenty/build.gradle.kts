@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
+    id(libs.plugins.androidMultiplatformLibrary.id)
     alias(libs.plugins.maven.publish)
     dokkaDocumentation
 }
@@ -19,8 +19,7 @@ kotlin {
     )
 }
 
-android {
-    configureAndroidLibrary(this)
+kotlin.android {
     namespace = "${Config.namespace}.essenty"
 }
 

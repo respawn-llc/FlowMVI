@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id(libs.plugins.kotlin.multiplatform.id)
-    id(applibs.plugins.android.application.id)
+    id("com.android.kotlin.multiplatform.library")
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
@@ -53,12 +53,14 @@ kotlin {
     }
     jvm("desktop")
 
-    androidTarget().compilations.all {
-        compileTaskProvider.configure {
-            compilerOptions {
-                jvmTarget = Config.jvmTarget
-                freeCompilerArgs.addAll(Config.jvmCompilerArgs)
-            }
+    android {
+        namespace = "${Config.Sample.namespace}.shared"
+        compileSdk = Config.compileSdk
+        minSdk = Config.appMinSdk
+        androidResources.enable = true
+        compilerOptions {
+            jvmTarget = Config.jvmTarget
+            freeCompilerArgs.addAll(Config.jvmCompilerArgs)
         }
     }
 
@@ -123,92 +125,16 @@ kotlin {
             implementation(libs.kotlin.coroutines.swing)
             implementation(compose.desktop.currentOs)
         }
-        androidMain.dependencies {
-            api(libs.compose.ui.tooling.preview)
-            implementation(projects.android)
-            implementation(applibs.view.constraintlayout)
-            implementation(applibs.view.material)
-            implementation(applibs.koin.android)
-
-            implementation(applibs.androidx.splashscreen)
-
-            implementation(libs.compose.activity)
-            implementation(applibs.koin.android)
-            implementation(applibs.koin.android.compose)
-            implementation(applibs.view.material)
-        }
         wasmJsMain.dependencies {
             implementation(libs.essenty.statekeeper)
         }
     } // sets
-}
-android {
-    namespace = Config.Sample.namespace
-    configureAndroid()
-    buildFeatures {
-        viewBinding = true
-        buildConfig = true
-        compose = true
-    }
-    defaultConfig {
-        compileSdk = Config.compileSdk
-        applicationId = Config.artifactId
-        minSdk = Config.appMinSdk
-        targetSdk = Config.targetSdk
-        versionCode = Config.versionCode
-        versionName = Config.versionName
-    }
-    applicationVariants.all {
-        outputs
-            .matching { "apk" in it.outputFile.extension }
-            .all {
-                this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-                outputFileName = "${Config.Sample.namespace}.apk"
-            }
-    }
-    val passwd by lazy {
-        val props by localProperties()
-        props["keystore.password"]?.toString()?.trim()?.takeIf { it.isNotBlank() }
-    }
-    val keystore by lazy { File(rootDir, "certificates/keystore.jks") }
-    val signed by lazy { passwd != null && keystore.exists() }
-    signingConfigs {
-        if (signed) create("release") {
-            keyAlias = "key"
-            keyPassword = passwd
-            storeFile = keystore
-            storePassword = passwd
-        }
-    }
-    buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            signingConfig = signingConfigs.getByName("debug")
-            versionNameSuffix = "-debug"
-            isShrinkResources = Config.isMinifyEnabledDebug
-        }
-        release {
-            ndk.debugSymbolLevel = "FULL"
-            isShrinkResources = true
-            isMinifyEnabled = true
-            signingConfig = if (signed) signingConfigs.getByName("release") else null
-        }
-    }
-    androidResources {
-        generateLocaleConfig = false
-    }
-}
-
-dependencies {
-    // means androidDebugImplementation
-    debugImplementation(projects.debugger.debuggerPlugin)
 }
 compose {
     resources {
         packageOfResClass = Config.Sample.namespace
         publicResClass = false
     }
-    android { }
     web { }
     desktop {
         application {

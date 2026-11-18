@@ -30,7 +30,7 @@ jobs:
         with:
           distribution: 'zulu'
           check-latest: true
-          java-version: 23
+          java-version: 27
           cache: 'gradle'
 
       - name: Validate gradle wrapper

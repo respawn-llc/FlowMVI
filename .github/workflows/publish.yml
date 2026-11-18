@@ -54,7 +54,7 @@ jobs:
         with:
           distribution: 'zulu'
           check-latest: true
-          java-version: 23
+          java-version: 27
           cache: 'gradle'
 
       - name: Validate gradle wrapper
@@ -78,7 +78,7 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Assemble android sample
-        run: ./gradlew :sample:assembleRelease
+        run: ./gradlew :sample:androidApp:assembleRelease
 
       - name: Publish to sonatype
         env:
@@ -126,7 +126,7 @@ jobs:
           draft: true
           artifactErrorsFailBuild: true
           prerelease: false
-          artifacts: sample/build/outputs/apk/release/pro.respawn.flowmvi.sample.apk,release-artifacts/debugger/Debugger_MacOS/*.dmg,release-artifacts/debugger/Debugger_Linux/*.deb,release-artifacts/debugger/Debugger_Windows/*.exe
+          artifacts: sample/androidApp/build/outputs/apk/release/pro.respawn.flowmvi.sample.apk,release-artifacts/debugger/Debugger_MacOS/*.dmg,release-artifacts/debugger/Debugger_Linux/*.deb,release-artifacts/debugger/Debugger_Windows/*.exe
           body: ${{steps.build_changelog.outputs.changelog}}
           tag: ${{ inputs.tag != '' && inputs.tag || github.ref_name }}
         env:

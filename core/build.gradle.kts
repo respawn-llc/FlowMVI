@@ -15,7 +15,7 @@ atomicfu {
     jvmVariant = "VH"
 }
 
-android {
+kotlin.android {
     namespace = Config.namespace
 }
 

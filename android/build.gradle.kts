@@ -1,6 +1,6 @@
 plugins {
     id(libs.plugins.kotlin.multiplatform.id)
-    id(libs.plugins.androidLibrary.id)
+    id(libs.plugins.androidMultiplatformLibrary.id)
     alias(libs.plugins.maven.publish)
     dokkaDocumentation
 }
@@ -9,7 +9,6 @@ kotlin {
     configureMultiplatform(
         ext = this,
         jvm = true,
-        android = true,
         iOs = true,
         macOs = true,
         watchOs = false,
@@ -28,9 +27,12 @@ kotlin {
     }
 }
 
-android {
-    configureAndroidLibrary(this)
+kotlin.android {
     namespace = "${Config.namespace}.android"
+    optimization.consumerKeepRules.apply {
+        publish = true
+        file(Config.consumerProguardFile)
+    }
 }
 
 dependencies {

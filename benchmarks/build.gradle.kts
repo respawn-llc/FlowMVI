@@ -15,7 +15,6 @@ kotlin {
         ext = this,
         explicitApi = false,
         wasmWasi = false,
-        android = false,
         linux = false,
         iOs = false,
         macOs = false,
