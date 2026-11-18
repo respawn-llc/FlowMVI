@@ -8,18 +8,28 @@ Use this file for exact callback signatures and rules. These are the full API su
 public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyPlugin<S, I, A> {
     public val name: String?
 
-    public suspend fun PipelineContext<S, I, A>.onState(old: S, new: S): S? = new
+    context(PipelineContext<S, I, A>)
+    public suspend fun onState(old: S, new: S): S? = new
     public fun onIntentEnqueue(intent: I): I? = intent
     public fun onActionDispatch(action: A): A? = action
-    public suspend fun PipelineContext<S, I, A>.onIntent(intent: I): I? = intent
-    public suspend fun PipelineContext<S, I, A>.onAction(action: A): A? = action
-    public suspend fun PipelineContext<S, I, A>.onException(e: Exception): Exception? = e
-    public suspend fun PipelineContext<S, I, A>.onStart(): Unit = Unit
-    public suspend fun PipelineContext<S, I, A>.onSubscribe(newSubscriberCount: Int): Unit = Unit
-    public suspend fun PipelineContext<S, I, A>.onUnsubscribe(newSubscriberCount: Int): Unit = Unit
-    public fun ShutdownContext<S, I, A>.onStop(e: Exception?): Unit = Unit
-    public fun ShutdownContext<S, I, A>.onUndeliveredIntent(intent: I): Unit = Unit
-    public fun ShutdownContext<S, I, A>.onUndeliveredAction(action: A): Unit = Unit
+    context(PipelineContext<S, I, A>)
+    public suspend fun onIntent(intent: I): I? = intent
+    context(PipelineContext<S, I, A>)
+    public suspend fun onAction(action: A): A? = action
+    context(PipelineContext<S, I, A>)
+    public suspend fun onException(e: Exception): Exception? = e
+    context(PipelineContext<S, I, A>)
+    public suspend fun onStart(): Unit = Unit
+    context(PipelineContext<S, I, A>)
+    public suspend fun onSubscribe(newSubscriberCount: Int): Unit = Unit
+    context(PipelineContext<S, I, A>)
+    public suspend fun onUnsubscribe(newSubscriberCount: Int): Unit = Unit
+    context(ShutdownContext<S, I, A>)
+    public fun onStop(e: Exception?): Unit = Unit
+    context(ShutdownContext<S, I, A>)
+    public fun onUndeliveredIntent(intent: I): Unit = Unit
+    context(ShutdownContext<S, I, A>)
+    public fun onUndeliveredAction(action: A): Unit = Unit
 }
 ```
 
@@ -72,31 +82,29 @@ public open class StorePluginBuilder<S : MVIState, I : MVIIntent, A : MVIAction>
 
 ## Decorator callbacks and types
 
-Decorators wrap plugins and can **short-circuit the chain** if they do not call child callbacks.
+Decorator callbacks control whether the wrapped chain proceeds.
 
 ```kotlin
 public typealias DecorateValue<S, I, A, V> = (
-    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, it: V) -> V?
+    context(PipelineContext<S, I, A>) suspend (chain: StorePlugin<S, I, A>, it: V) -> V?
 )
 
-public typealias DecorateValueNonSuspend<S, I, A, V> = (
-    child: StorePlugin<S, I, A>, it: V
-) -> V?
+public typealias DecorateValueNonSuspend<S, I, A, V> = (chain: StorePlugin<S, I, A>, it: V) -> V?
 
 public typealias DecorateState<S, I, A> = (
-    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, old: S, new: S) -> S?
+    context(PipelineContext<S, I, A>) suspend (chain: StorePlugin<S, I, A>, old: S, new: S) -> S?
 )
 
 public typealias Decorate<S, I, A> = (
-    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>) -> Unit
+    context(PipelineContext<S, I, A>) suspend (chain: StorePlugin<S, I, A>) -> Unit
 )
 
 public typealias DecorateArg<S, I, A, V> = (
-    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, it: V) -> Unit
+    context(PipelineContext<S, I, A>) suspend (chain: StorePlugin<S, I, A>, it: V) -> Unit
 )
 
 public typealias DecorateShutdown<S, I, A, V> = (
-    ShutdownContext<S, I, A>.(child: StorePlugin<S, I, A>, e: V) -> Unit
+    context(ShutdownContext<S, I, A>) (chain: StorePlugin<S, I, A>, e: V) -> Unit
 )
 ```
 
@@ -123,38 +131,18 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> {
 ### Decorator semantics (short)
 
 - Decorators wrap a plugin (or the whole store as a composite plugin).
-- If you do **not** call `child.onX(...)` inside the decorator, the chain ends there.
+- A decorator callback that omits its matching `chain.onX(...)` call stops the wrapped chain.
 - Decorators are installed **after** plugins and wrap all previously installed plugins.
 - Return values are **final** unless wrapped by another decorator.
 
 ### Decorator example (callback forwarding)
 
-This pattern is required: you **must** forward to `child.run { onIntent(...) }` (or the appropriate callback), otherwise the chain stops.
+Forward the callback to the wrapped plugin with `chain.onIntent(intent)` when the decorator should continue the chain.
 
 ```kotlin
-@FlowMVIDSL
-@ExperimentalFlowMVIAPI
-fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
-    timeout: Duration,
-    name: String? = "DebounceIntents",
-): PluginDecorator<S, I, A> = decorator {
-    this.name = name
-    val handle = JobHandle()
-
-    onIntent { child, intent ->
-        handle.job?.cancelAndJoin()
-        val job = launch {
-            delay(timeout)
-            child.run { onIntent(intent) }
-        }
-        handle.set(job)
-        null
-    }
-
-    onStop { child, e ->
-        handle.set(null)
-        child.run { onStop(e) }
+val forwardingDecorator = decorator<State, Intent, Action> {
+    onIntent { chain, intent ->
+        chain.onIntent(intent)
     }
 }
 ```
-

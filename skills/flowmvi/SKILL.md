@@ -185,7 +185,7 @@ Use `references/plugin-callbacks.md` for full behavior rules.
 Decorators wrap plugins and can short-circuit the entire chain.
 
 - decorators run **after** plugins; they wrap all previously installed plugins.
-- If you do not invoke `child.onX(...)` in a decorator, the chain stops there.
+- Forward decorator callbacks with `chain.onX(...)`. A callback that omits the matching call stops the wrapped chain.
 - Decorators return final values, not intermediate chain values.
 
 Use decorators only when:
