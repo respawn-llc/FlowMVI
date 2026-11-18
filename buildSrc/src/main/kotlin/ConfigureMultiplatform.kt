@@ -64,7 +64,7 @@ fun Project.configureMultiplatform(
     }
 
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
-        compileSdk = Config.compileSdk
+        compileSdk(Config.compileSdk)
         minSdk = Config.minSdk
         lint.warning.add("AutoboxingStateCreation")
         withHostTest {

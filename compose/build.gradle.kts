@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 plugins {
     id(libs.plugins.kotlin.multiplatform.id)
     id(libs.plugins.androidMultiplatformLibrary.id)
-    alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.maven.publish)
     dokkaDocumentation

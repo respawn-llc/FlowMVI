@@ -55,7 +55,7 @@ kotlin {
 
     android {
         namespace = "${Config.Sample.namespace}.shared"
-        compileSdk = Config.compileSdk
+        compileSdk(Config.compileSdk)
         minSdk = Config.appMinSdk
         androidResources.enable = true
         compilerOptions {

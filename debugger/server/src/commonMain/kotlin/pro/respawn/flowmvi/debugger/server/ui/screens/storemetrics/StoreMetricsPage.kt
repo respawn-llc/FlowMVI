@@ -23,12 +23,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -244,24 +243,23 @@ private fun IntentReceiver<StoreMetricsIntent>.WindowSlider(
     modifier: Modifier = Modifier,
 ) {
     val clamped = seconds.coerceIn(MetricsWindowRange)
-    var sliderValue by remember(clamped) { mutableFloatStateOf(clamped.toFloat()) }
+    val slider = remember(clamped) { SliderState(value = clamped.toFloat(), trackRange = MetricsWindowRange.toFloat()) }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Window: ${sliderValue.roundToInt()}s",
+            text = "Window: ${slider.value.roundToInt()}s",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         val source = remember { MutableInteractionSource() }
         Slider(
-            value = sliderValue,
+            state = slider,
+            onValueChange = { slider.value = it },
             interactionSource = source,
-            onValueChange = { sliderValue = it },
             thumb = { SliderDefaults.Thumb(source, thumbSize = DpSize(4.dp, 32.dp)) },
-            valueRange = MetricsWindowRange.toFloat(),
-            onValueChangeFinished = { intent(WindowSelected(sliderValue.roundToInt())) },
+            onValueChangeFinished = { intent(WindowSelected(slider.value.roundToInt())) },
         )
     }
 }

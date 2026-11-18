@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = Config.Sample.namespace
-    compileSdk = Config.compileSdk
+    compileSdk(Config.compileSdk)
 
     defaultConfig {
         applicationId = Config.artifactId

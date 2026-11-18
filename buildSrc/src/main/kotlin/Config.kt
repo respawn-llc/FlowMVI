@@ -6,6 +6,7 @@
     "MaxLineLength"
 )
 
+import com.android.build.api.dsl.CompileSdkSpec
 import org.gradle.api.JavaVersion
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -70,8 +71,10 @@ object Config {
     }
 
     // android
-    const val compileSdk = 36
-    const val targetSdk = compileSdk
+    val compileSdk: CompileSdkSpec.() -> Unit = {
+        version = release(37) { minorApiLevel = 2 }
+    }
+    const val targetSdk = 36
     const val minSdk = 23
     const val appMinSdk = 26
     const val namespace = artifactId

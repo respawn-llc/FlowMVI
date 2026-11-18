@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.Checksum
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -48,6 +49,8 @@ subprojects {
         the<MavenPublishBaseExtension>().apply {
             val isReleaseBuild = properties["release"]?.toString().toBoolean()
             publishToMavenCentral(false)
+            checksums(Checksum.MD5, Checksum.SHA1, Checksum.SHA256, Checksum.SHA512)
+            excludeSignatureChecksums(false)
             configure(
                 KotlinMultiplatform(
                     javadocJar = JavadocJar.Empty(),

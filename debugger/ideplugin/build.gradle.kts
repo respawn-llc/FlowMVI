@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import kotlin.text.replace
 
 plugins {
@@ -62,6 +63,10 @@ intellijPlatform {
                 IntelliJPlatformType.IntellijIdea,
                 libs.versions.intellij.idea.get()
             )
+            create(
+                IntelliJPlatformType.IntellijIdea,
+                libs.versions.intellij.verification.ide.get()
+            )
         }
     }
     pluginConfiguration {
@@ -82,16 +87,20 @@ intellijPlatform {
     }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget.set(Config.Plugin.jvmTarget)
-    }
+java {
+    // Compile with the build JDK, but keep the plugin runnable on Java 21 IDEs.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.current().majorVersion.toInt()))
 }
 
 tasks {
     withType<JavaCompile> {
-        sourceCompatibility = Config.Plugin.jvmTarget.target
-        targetCompatibility = Config.Plugin.jvmTarget.target
+        options.release.set(Config.Plugin.jvmTarget.target.toInt())
+    }
+    withType<KotlinJvmCompile> {
+        compilerOptions {
+            jvmTarget.set(Config.Plugin.jvmTarget)
+            freeCompilerArgs.add("-Xjdk-release=${Config.Plugin.jvmTarget.target}")
+        }
     }
     buildPlugin {
         archiveFileName = "${Config.artifact}-$version.zip"
