@@ -54,9 +54,14 @@ object Config {
         "-Xconsistent-data-class-copy-visibility",
         "-Xwarning-level=NOTHING_TO_INLINE:disabled",
         "-Xwarning-level=UNUSED_ANONYMOUS_PARAMETER:disabled",
+        "-Xcallable-references-to-contextual",
+        "-Xcollection-literals",
+        "-Xcompanion-blocks",
         "-Xcontext-sensitive-resolution",
+        "-Xeager-lambda-analysis",
+        "-Xexplicit-context-arguments",
         "-Xreturn-value-checker=check",
-        // "-Xwhen-guards",
+        "-Xstrict-equality-for-structural-classes",
     )
     val jvmCompilerArgs = buildList {
         add("-jvm-default=enable")

@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBinaryMode
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
 fun Project.configureMultiplatform(
@@ -47,6 +48,14 @@ fun Project.configureMultiplatform(
         browser()
         nodejs()
         binaries.library()
+        binaries.configureEach {
+            if (mode == KotlinJsBinaryMode.PRODUCTION) {
+                // This flag only affects the JS linker, despite being accepted by the Wasm CLI.
+                linkTask.configure {
+                    compilerOptions.freeCompilerArgs.add("-Xenable-advanced-optimizations")
+                }
+            }
+        }
     }
 
     if (wasmJs) wasmJs {
