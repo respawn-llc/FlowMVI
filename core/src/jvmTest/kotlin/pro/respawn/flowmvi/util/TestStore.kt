@@ -2,7 +2,6 @@
 
 package pro.respawn.flowmvi.util
 
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.ActionShareBehavior
 import pro.respawn.flowmvi.api.StateStrategy
 import pro.respawn.flowmvi.api.Store
@@ -21,7 +20,6 @@ import pro.respawn.flowmvi.plugins.timeTravel
 internal typealias TestTimeTravel = TimeTravel<TestState, LambdaIntent<TestState, TestAction>, TestAction>
 internal typealias TestStore = Store<TestState, TestIntent, TestAction>
 
-@OptIn(ExperimentalFlowMVIAPI::class)
 internal fun testDecorator(
     configure: DecoratorBuilder<TestState, TestIntent, TestAction>.() -> Unit
 ) = decorator(configure)

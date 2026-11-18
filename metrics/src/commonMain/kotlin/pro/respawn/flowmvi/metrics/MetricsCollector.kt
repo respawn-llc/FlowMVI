@@ -11,7 +11,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.annotation.InternalFlowMVIAPI
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -153,7 +152,6 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     private val lastConfig = atomic<StoreConfiguration<MVIState>?>(null)
 
     /** Returns a decorator that wires metrics capture into store callbacks. */
-    @OptIn(ExperimentalFlowMVIAPI::class)
     fun asDecorator(name: String?): PluginDecorator<S, I, A> = decorator {
         this.name = name
         onStart { child ->
@@ -163,7 +161,8 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
             runId.value = id
             val previous = currentRun.getAndSet(Run(id, channel, job))
             check(previous == null || previous.job.isCompleted) {
-                "MetricsCollector started with previous run still active for store=${config.name}"
+                val pipeline = contextOf<PipelineContext<S, I, A>>()
+                "MetricsCollector started with previous run still active for store=${pipeline.config.name}"
             }
             recordStart(child)
         }
@@ -180,9 +179,10 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         onException { child, e -> recordException(child, e) }
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordStart(child: StorePlugin<S, I, A>) {
-        lastConfig.value = config
-        val shouldTrackTtfs = states.value == config.initial
+    context(pipeline: PipelineContext<S, I, A>)
+    private suspend fun recordStart(child: StorePlugin<S, I, A>) {
+        lastConfig.value = pipeline.config
+        val shouldTrackTtfs = pipeline.states.value == pipeline.config.initial
         startedInInitialState.value = shouldTrackTtfs
         timeToFirstStateNanos.value = UnrecordedDurationNanos
         timeToFirstStateStart.value = if (shouldTrackTtfs) timeSource.markNow() else null
@@ -190,11 +190,12 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         startCount.incrementAndGet()
         val startedAt = timeSource.markNow()
         currentStart.value = startedAt
-        child.run { onStart() }
+        child.onStart()
         send(Event.Bootstrap(startedAt.elapsedNow()))
     }
 
-    private fun ShutdownContext<S, I, A>.recordStop(child: StorePlugin<S, I, A>, e: Exception?) {
+    context(shutdown: ShutdownContext<S, I, A>)
+    private fun recordStop(child: StorePlugin<S, I, A>, e: Exception?) {
         stopCount.incrementAndGet()
         timeToFirstStateStart.value = null
         currentStart.getAndSet(null)?.let { startedAt ->
@@ -202,10 +203,10 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
             uptimeTotalMillis.addAndGet(runDurationMillis.inWholeMilliseconds)
             send(Event.RunDuration(runDurationMillis))
         }
-        child.run { onStop(e) }
+        child.onStop(e)
         val run = currentRun.getAndSet(null) ?: return
         reportingScope.launch(offloadContext) {
-            this@recordStop.awaitUntilClosed()
+            shutdown.awaitUntilClosed()
             run.channel.close()
             run.job.join()
         }
@@ -227,14 +228,15 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         return mapped
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordIntent(child: StorePlugin<S, I, A>, intent: I): I? {
+    context(_: PipelineContext<S, I, A>)
+    private suspend fun recordIntent(child: StorePlugin<S, I, A>, intent: I): I? {
         val start = timeSource.markNow()
         val queueInstant = intentQueue.removeFirstOrNull()
         val queuedDuration = queueInstant?.elapsedNow()
         val inFlight = intentInFlight.incrementAndGet()
         intentInFlightMax.update { current -> maxOf(current, inFlight) }
         updateIntentOccupancy()
-        val result = runCatching { child.run { onIntent(intent) } }.getOrElse {
+        val result = runCatching { child.onIntent(intent) }.getOrElse {
             intentInFlight.decrementAndGet()
             updateIntentOccupancy()
             throw it
@@ -248,19 +250,21 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         return result
     }
 
-    private fun ShutdownContext<S, I, A>.recordUndeliveredIntent(child: StorePlugin<S, I, A>, intent: I) {
+    context(_: ShutdownContext<S, I, A>)
+    private fun recordUndeliveredIntent(child: StorePlugin<S, I, A>, intent: I) {
         intentUndelivered.incrementAndGet()
         intentOverflows.incrementAndGet()
         intentQueue.removeFirstOrNull()
         updateIntentOccupancy()
-        child.run { onUndeliveredIntent(intent) }
+        child.onUndeliveredIntent(intent)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordAction(child: StorePlugin<S, I, A>, action: A): A? {
+    context(_: PipelineContext<S, I, A>)
+    private suspend fun recordAction(child: StorePlugin<S, I, A>, action: A): A? {
         val start = timeSource.markNow()
         actionQueue.addLast(start)
         updateActionOccupancy()
-        val result = child.run { onAction(action) }
+        val result = child.onAction(action)
         val duration = start.elapsedNow()
         if (result != null) actionSent.incrementAndGet()
         send(Event.ActionPlugin(duration))
@@ -287,47 +291,52 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         return result
     }
 
-    private fun ShutdownContext<S, I, A>.recordUndeliveredAction(child: StorePlugin<S, I, A>, action: A) {
+    context(_: ShutdownContext<S, I, A>)
+    private fun recordUndeliveredAction(child: StorePlugin<S, I, A>, action: A) {
         actionUndelivered.incrementAndGet()
         actionOverflows.incrementAndGet()
         actionQueue.removeFirstOrNull()
         updateActionOccupancy()
-        child.run { onUndeliveredAction(action) }
+        child.onUndeliveredAction(action)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordState(
+    context(pipeline: PipelineContext<S, I, A>)
+    private suspend fun recordState(
         child: StorePlugin<S, I, A>,
         old: S,
         new: S,
     ): S? {
         val (result, duration) = timeSource.measureTimedValue {
-            child.run { onState(old, new) }
+            child.onState(old, new)
         }
         stateTransitions.incrementAndGet()
         val vetoed = result == null || result === old
         if (vetoed) stateVetoed.incrementAndGet()
-        recordTimeToFirstState(result, config.initial)
+        recordTimeToFirstState(result, pipeline.config.initial)
         send(Event.StateProcessed(duration))
         return result
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordSubscribe(child: StorePlugin<S, I, A>, count: Int) {
+    context(_: PipelineContext<S, I, A>)
+    private suspend fun recordSubscribe(child: StorePlugin<S, I, A>, count: Int) {
         handleSubscriptionChange(count)
-        child.run { onSubscribe(count) }
+        child.onSubscribe(count)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordUnsubscribe(child: StorePlugin<S, I, A>, count: Int) {
+    context(_: PipelineContext<S, I, A>)
+    private suspend fun recordUnsubscribe(child: StorePlugin<S, I, A>, count: Int) {
         handleSubscriptionChange(count)
-        child.run { onUnsubscribe(count) }
+        child.onUnsubscribe(count)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordException(
+    context(_: PipelineContext<S, I, A>)
+    private suspend fun recordException(
         child: StorePlugin<S, I, A>,
         e: Exception,
     ): Exception? {
         exceptionTotal.incrementAndGet()
         val (result, duration) = timeSource.measureTimedValue {
-            child.run { onException(e) }
+            child.onException(e)
         }
         if (result == null) {
             exceptionHandled.incrementAndGet()

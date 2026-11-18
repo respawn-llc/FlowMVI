@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import pro.respawn.flowmvi.decorator.decorates
-import pro.respawn.flowmvi.decorator.decorator
 import pro.respawn.flowmvi.dsl.plugin
 import pro.respawn.flowmvi.plugins.compositePlugin
 import pro.respawn.flowmvi.plugins.timeTravelPlugin
@@ -36,12 +35,10 @@ class DecoratorValuesTest : FreeSpec({
         "and a decorator that calls the chain and returns the result" - {
             val decorator = testDecorator {
                 onState { chain, old, new ->
-                    chain.run {
-                        old shouldBe TestState.Some
-                        val result = onState(old, new)
-                        result shouldBe SomeData(1)
-                        result
-                    }
+                    old shouldBe TestState.Some
+                    val result = chain.onState(old, new)
+                    result shouldBe SomeData(1)
+                    result
                 }
             }
             "then the final result is the new state" {
@@ -55,7 +52,7 @@ class DecoratorValuesTest : FreeSpec({
             val replacement = SomeData(2)
             val decorator = testDecorator {
                 onState { chain, old, new ->
-                    val _ = chain.run { onState(old, new) }
+                    val _ = chain.onState(old, new)
                     replacement
                 }
             }
@@ -68,7 +65,7 @@ class DecoratorValuesTest : FreeSpec({
         }
         "and a decorator that ignores the chain" - {
             val decorator = testDecorator {
-                onState { chain, old, new ->
+                onState { _, old, _ ->
                     old shouldBe TestState.Some
                     old
                 }

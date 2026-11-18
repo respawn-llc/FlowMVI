@@ -2,7 +2,6 @@
 
 package pro.respawn.flowmvi.decorator
 
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -13,25 +12,25 @@ import pro.respawn.flowmvi.impl.plugin.PluginInstance
 import pro.respawn.flowmvi.impl.plugin.asInstance
 
 public typealias DecorateValue<S, I, A, V> = (
-suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, it: V) -> V?
+suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>, it: V) -> V?
 )
 
-public typealias DecorateValueNonSuspend<S, I, A, V> = (child: StorePlugin<S, I, A>, it: V) -> V?
+public typealias DecorateValueNonSuspend<S, I, A, V> = (chain: StorePlugin<S, I, A>, it: V) -> V?
 
 public typealias DecorateState<S, I, A> = (
-suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, old: S, new: S) -> S?
+suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>, old: S, new: S) -> S?
 )
 
 public typealias Decorate<S, I, A> = (
-suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>) -> Unit
+suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>) -> Unit
 )
 
 public typealias DecorateArg<S, I, A, V> = (
-suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, it: V) -> Unit
+suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>, it: V) -> Unit
 )
 
 public typealias DecorateShutdown<S, I, A, V> = (
-ShutdownContext<S, I, A>.(child: StorePlugin<S, I, A>, e: V) -> Unit
+context(ShutdownContext<S, I, A>) (chain: StorePlugin<S, I, A>, e: V) -> Unit
 )
 
 /**
@@ -39,7 +38,6 @@ ShutdownContext<S, I, A>.(child: StorePlugin<S, I, A>, e: V) -> Unit
  *
  * Consult the [PluginDecorator] and [DecoratorBuilder] docs for more info.
  */
-@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> decorator(
     block: DecoratorBuilder<S, I, A>.() -> Unit
 ): PluginDecorator<S, I, A> = DecoratorBuilder<S, I, A>().apply(block).build()
@@ -71,10 +69,10 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
 ): PluginInstance<S, I, A> = copy(
     name = decorator.name,
     onState = wrapNotNull(onState, decorator.onState) { wrap ->
-        ctx@{ old, new -> wrap(this, this@decorate, old, new) }
+        { old, new -> wrap(this@decorate, old, new) }
     },
     onIntent = wrapNotNull(onIntent, decorator.onIntent) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onIntentEnqueue = wrapNotNull(onIntentEnqueue, decorator.onIntentEnqueue) { wrap ->
         { intent ->
@@ -82,7 +80,7 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         }
     },
     onAction = wrapNotNull(onAction, decorator.onAction) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onActionDispatch = wrapNotNull(onActionDispatch, decorator.onActionDispatch) { wrap ->
         { action ->
@@ -90,25 +88,25 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         }
     },
     onException = wrapNotNull(onException, decorator.onException) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onStart = wrapNotNull(onStart, decorator.onStart) { wrap ->
-        ctx@{ wrap(this, this@decorate) }
+        { wrap(this@decorate) }
     },
     onSubscribe = wrapNotNull(onSubscribe, decorator.onSubscribe) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onUnsubscribe = wrapNotNull(onUnsubscribe, decorator.onUnsubscribe) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onStop = wrapNotNull(onStop, decorator.onStop) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onUndeliveredIntent = wrapNotNull(onUndeliveredIntent, decorator.onUndeliveredIntent) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     },
     onUndeliveredAction = wrapNotNull(onUndeliveredAction, decorator.onUndeliveredAction) { wrap ->
-        ctx@{ wrap(this, this@decorate, it) }
+        { wrap(this@decorate, it) }
     }
 )
 private inline fun <H, W> wrapNotNull(

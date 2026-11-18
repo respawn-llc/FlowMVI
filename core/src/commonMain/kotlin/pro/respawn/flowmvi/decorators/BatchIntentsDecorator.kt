@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -95,7 +94,6 @@ public class BatchQueue<I : MVIIntent> {
  * to this callback immediately and nothing is bubbled up.
  * By default the callback is a no-op, preserving the previous behaviour where unhandled intents were dropped.
  */
-@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
     mode: BatchingMode,
     queue: BatchQueue<I> = BatchQueue(),
@@ -105,21 +103,22 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
     this.name = name
     var job: Job? = null
     if (mode is BatchingMode.Time) onStart { child ->
-        job = launch(start = CoroutineStart.LAZY) {
+        val pipeline = contextOf<PipelineContext<S, I, A>>()
+        job = pipeline.launch(start = CoroutineStart.LAZY) {
             while (isActive) {
                 delay(mode.duration)
                 val intents = queue.flush().ifEmpty { continue }
-                config.logger.debug(name) {
+                pipeline.config.logger.debug(name) {
                     "Flushing ${intents.size} after batching for ${mode.duration}"
                 }
                 val _ = intents.fold<I, I?>(null) { _, next ->
-                    val result = child.run { onIntent(next) } ?: return@fold null
-                    onUnhandledIntent(result)
+                    val result = child.onIntent(next) ?: return@fold null
+                    pipeline.onUnhandledIntent(result)
                     result
                 }
             }
         }
-        child.run { onStart() }
+        child.onStart()
     }
     onIntent { child, intent ->
         when (mode) {
@@ -131,10 +130,11 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
             is BatchingMode.Amount -> {
                 val intents = queue.pushAndFlushIfReached(intent, mode.size)
                 if (intents.isEmpty()) return@onIntent null
-                config.logger.debug(name) { "Flushing ${intents.size} after batching" }
+                val pipeline = contextOf<PipelineContext<S, I, A>>()
+                pipeline.config.logger.debug(name) { "Flushing ${intents.size} after batching" }
                 intents.fold(null) { _, next ->
-                    val result = child.run { onIntent(next) } ?: return@fold null
-                    onUnhandledIntent(result)
+                    val result = child.onIntent(next) ?: return@fold null
+                    pipeline.onUnhandledIntent(result)
                     result
                 }
             }
@@ -143,10 +143,8 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
     onStop { child, e ->
         job?.cancel()
         job = null
-        child.run {
-            queue.flush().forEach { intent -> onUndeliveredIntent(intent) }
-            onStop(e)
-        }
+        queue.flush().forEach { intent -> child.onUndeliveredIntent(intent) }
+        child.onStop(e)
     }
 }
 
@@ -155,7 +153,6 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
  *
  * @param onUnhandledIntent see [batchIntentsDecorator] for semantics.
  */
-@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.batchIntents(
     mode: BatchingMode,
     name: String? = "BatchIntentsDecorator",

@@ -1,7 +1,6 @@
 package pro.respawn.flowmvi.dsl
 
 import pro.respawn.flowmvi.StoreImpl
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.FlowMVIDSL
 import pro.respawn.flowmvi.api.LazyPlugin
 import pro.respawn.flowmvi.api.MVIAction
@@ -114,7 +113,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
     @JvmName("decorate")
-    @ExperimentalFlowMVIAPI
     public infix fun install(decorators: Iterable<PluginDecorator<S, I, A>>): Unit = decorators.forEach {
         require(this.decorators.add(it)) { duplicatePluginMessage("decorator", it.toString()) }
     }
@@ -130,7 +128,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
     @JvmName("decorate")
-    @ExperimentalFlowMVIAPI
     public fun install(decorator: PluginDecorator<S, I, A>, vararg other: PluginDecorator<S, I, A>) {
         install(sequenceOf(decorator).plus(other).asIterable())
     }
@@ -145,7 +142,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      *
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
-    @ExperimentalFlowMVIAPI
     public inline infix fun decorate(block: DecoratorBuilder<S, I, A>.() -> Unit): Unit = install(decorator(block))
 
     /**
@@ -159,7 +155,6 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Published
      * See [DecoratorBuilder] for more info on the behavior of decorators.
      */
     @JvmName("decorate")
-    @ExperimentalFlowMVIAPI
     public fun PluginDecorator<S, I, A>.install(): Unit = install(this)
 
     // endregion

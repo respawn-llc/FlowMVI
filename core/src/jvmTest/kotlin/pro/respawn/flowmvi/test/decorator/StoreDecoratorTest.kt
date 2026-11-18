@@ -4,6 +4,8 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import pro.respawn.flowmvi.api.DelicateStoreApi
+import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.decorator.decoratedWith
 import pro.respawn.flowmvi.decorator.decorates
 import pro.respawn.flowmvi.dsl.plugin
@@ -16,6 +18,7 @@ import pro.respawn.flowmvi.util.configure
 import pro.respawn.flowmvi.util.testDecorator
 import pro.respawn.flowmvi.util.testTimeTravel
 
+@OptIn(DelicateStoreApi::class)
 class StoreDecoratorTest : FreeSpec({
     configure()
 
@@ -40,7 +43,7 @@ class StoreDecoratorTest : FreeSpec({
             var invocations = 0
             val decorator = testDecorator {
                 onStart { chain ->
-                    chain.run { onStart() }
+                    chain.onStart()
                     ++invocations
                 }
             }
@@ -53,24 +56,30 @@ class StoreDecoratorTest : FreeSpec({
         }
     }
     "given multiple decorators" - {
-        val invocations = mutableListOf<Int>()
+        val invocations = mutableListOf<String>()
+        val plugin = plugin<TestState, TestIntent, TestAction> {
+            onStart { invocations += "plugin" }
+        }
         val decorator1 = testDecorator {
             onStart { chain ->
-                chain.run { onStart() }
-                invocations += 1
+                invocations += "first before"
+                chain.onStart()
+                invocations += "first after"
             }
         }
         val decorator2 = testDecorator {
             onStart { chain ->
-                chain.run { onStart() }
-                invocations += 2
+                invocations += "second before"
+                chain.onStart()
+                invocations += "second after"
             }
         }
         "then decorators are applied in the correct order" {
-            (timeTravelPlugin decoratedWith listOf(decorator1, decorator2)).test(TestState.Some) {
+            (plugin decoratedWith listOf(decorator1, decorator2)).test(TestState.Some) {
                 onStart()
-                timeTravel.starts shouldBe 1
-                invocations shouldContainExactly listOf(1, 2)
+                invocations shouldContainExactly listOf(
+                    "second before", "first before", "plugin", "first after", "second after",
+                )
             }
         }
     }
@@ -79,7 +88,7 @@ class StoreDecoratorTest : FreeSpec({
         beforeEach { invocations.clear() }
         val decorator1 = testDecorator {
             onStart { chain ->
-                chain.run { onStart() }
+                chain.onStart()
                 invocations += 1
             }
         }
@@ -101,19 +110,18 @@ class StoreDecoratorTest : FreeSpec({
             }
         }
     }
-    "given a decorator with all callbacks defined" - {
+    "given a decorator that forwards pipeline and lifecycle callbacks" - {
         val decorator = testDecorator {
-            onStart { it.run { onStart() } }
-            onIntentEnqueue { chain, intent -> chain.run { onIntentEnqueue(intent) } }
-            onIntent { chain, it -> chain.run { onIntent(it) } }
-            onException { chain, it -> chain.run { onException(it) } }
-            onState { chain, old, new -> chain.run { onState(old, new) } }
-            onAction { chain, it -> chain.run { onAction(it) } }
-            onActionDispatch { chain, action -> chain.run { onActionDispatch(action) } }
-            onSubscribe { chain, it -> chain.run { onSubscribe(it) } }
-            onUnsubscribe { chain, it -> chain.run { onUnsubscribe(it) } }
+            onStart { chain -> chain.onStart() }
+            onIntent { chain, intent -> chain.onIntent(intent) }
+            onException { chain, cause -> chain.onException(cause) }
+            onState { chain, old, new -> chain.onState(old, new) }
+            onAction { chain, action -> chain.onAction(action) }
+            onSubscribe { chain, count -> chain.onSubscribe(count) }
+            onUnsubscribe { chain, count -> chain.onUnsubscribe(count) }
+            onStop { chain, cause -> chain.onStop(cause) }
         }
-        "then all callbacks are invoked" {
+        "then the plugin receives the forwarded pipeline callbacks" {
             (timeTravelPlugin decoratedWith decorator).test(TestState.Some) {
                 onStart()
                 timeTravel.starts shouldBe 1
@@ -127,6 +135,81 @@ class StoreDecoratorTest : FreeSpec({
                 timeTravel.subscriptions shouldBe 1
                 onUnsubscribe(1)
                 timeTravel.unsubscriptions shouldBe 1
+                val cause = IllegalStateException("test")
+                onException(cause) shouldBe cause
+                timeTravel.exceptions shouldContainExactly listOf(cause)
+                onStop(cause)
+                timeTravel.stops shouldBe 1
+            }
+        }
+    }
+    "given an intent decorator with implicit access to the pipeline" - {
+        "then the decorator and downstream plugin operate on the same state" {
+            val nextState = TestState.SomeData(2)
+            val plugin = plugin<TestState, TestIntent, TestAction> {
+                onIntent { intent ->
+                    withState { this shouldBe nextState }
+                    intent
+                }
+            }
+            val decorator = testDecorator {
+                onIntent { chain, intent ->
+                    setTestState(nextState)
+                    chain.onIntent(intent)
+                }
+            }
+            (decorator decorates plugin).test(TestState.Some) {
+                val intent = TestIntent { }
+                onIntent(intent) shouldBe intent
+                withState { this shouldBe nextState }
+            }
+        }
+    }
+    "given an outer decorator that drops an intent" - {
+        "then neither the inner decorator nor the plugin sees the intent" {
+            val calls = mutableListOf<String>()
+            val inner = testDecorator {
+                onIntent { chain, intent ->
+                    calls += "inner"
+                    chain.onIntent(intent)
+                }
+            }
+            val outer = testDecorator {
+                onIntent { _, _ ->
+                    calls += "outer"
+                    null
+                }
+            }
+            val plugin = plugin<TestState, TestIntent, TestAction> {
+                onIntent { intent ->
+                    calls += "plugin"
+                    intent
+                }
+            }
+            (plugin decoratedWith listOf(inner, outer)).test(TestState.Some) {
+                onIntent(TestIntent { }) shouldBe null
+                calls shouldContainExactly listOf("outer")
+            }
+        }
+    }
+    "given a decorator that wraps undelivered values" - {
+        "then the downstream plugin receives the original values" {
+            val intents = mutableListOf<TestIntent>()
+            val actions = mutableListOf<TestAction>()
+            val plugin = plugin<TestState, TestIntent, TestAction> {
+                onUndeliveredIntent { intents += it }
+                onUndeliveredAction { actions += it }
+            }
+            val decorator = testDecorator {
+                onUndeliveredIntent { chain, intent -> chain.onUndeliveredIntent(intent) }
+                onUndeliveredAction { chain, action -> chain.onUndeliveredAction(action) }
+            }
+            (decorator decorates plugin).test(TestState.Some) {
+                val intent = TestIntent { }
+                onUndeliveredIntent(intent)
+                onUndeliveredAction(TestAction.Some)
+                intents shouldContainExactly listOf(intent)
+                actions shouldContainExactly listOf(TestAction.Some)
             }
         }
     }
@@ -141,7 +224,7 @@ class StoreDecoratorTest : FreeSpec({
         val decorator = testDecorator {
             onIntentEnqueue { chain, intent ->
                 calls += "decorator:$intent"
-                chain.run { onIntentEnqueue(intent) }
+                chain.onIntentEnqueue(intent)
             }
         }
         "then decorator invokes child" {
@@ -163,7 +246,7 @@ class StoreDecoratorTest : FreeSpec({
         val decorator = testDecorator {
             onActionDispatch { chain, action ->
                 calls += "decorator:$action"
-                chain.run { onActionDispatch(action) }
+                chain.onActionDispatch(action)
             }
         }
         "then decorator invokes child" {
@@ -175,3 +258,6 @@ class StoreDecoratorTest : FreeSpec({
         }
     }
 })
+
+context(pipeline: PipelineContext<TestState, TestIntent, TestAction>)
+private suspend fun setTestState(state: TestState): Unit = pipeline.updateState { state }
