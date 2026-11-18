@@ -237,7 +237,7 @@ lifecycle integration stay unchanged. The only UI change is calling `subscribe` 
 `collectAsStateWithLifecycle`.
 
 See the [Android guide](../integrations/android.md) for the full pattern and
-the [DI guide](../integrations/di.md) for Koin and Kodein setup.
+the [DI guide](../integrations/di.md) for Koin setup.
 
 ### 3. Graduate to sealed intents when needed
 
