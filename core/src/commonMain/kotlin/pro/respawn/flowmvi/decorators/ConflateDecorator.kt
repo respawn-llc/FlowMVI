@@ -36,7 +36,7 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateIntentsDe
     onIntent { chain, cur ->
         val prev = lastIntent.update(cur)
         if (prev != null && compare(prev, cur)) return@onIntent null
-        with(chain) { onIntent(cur) }
+        chain.onIntent(cur)
     }
     onStop { child, e ->
         lastIntent.update(null)

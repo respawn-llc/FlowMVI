@@ -12,13 +12,12 @@ import pro.respawn.flowmvi.dsl.plugin
  * All stores are mostly based on plugins, and their behavior is entirely determined by them.
  *
  * Plugins can influence subscription, stopping, and all other forms of store behavior.
- * Access the store's context and other functions through the [PipelineContext] receiver.
+ * Pipeline callbacks take a [PipelineContext] context parameter. Shutdown callbacks take a [ShutdownContext].
  * Plugins are typically made using [StorePluginBuilder].
  *
  * It is not recommended to implement this interface, instead, use one of the [plugin] builders
  */
 @Suppress("ComplexInterface", "TooManyFunctions")
-@OptIn(ExperimentalSubclassOptIn::class)
 @SubclassOptInRequired(NotIntendedForInheritance::class)
 public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyPlugin<S, I, A> {
 
@@ -70,7 +69,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      *  * Return [old] to veto the state change, but allow next plugins in the queue to process the state.
      *  * Execute other operations using [PipelineContext].
      */
-    public suspend fun PipelineContext<S, I, A>.onState(old: S, new: S): S? = new
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onState(old: S, new: S): S? = new
 
     /**
      * Invoked immediately before an [MVIIntent] is enqueued (dispatched into the intent buffer).
@@ -110,7 +110,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * * Return [intent] to continue processing, leaving the [intent] unmodified.
      * * Execute other operations using [PipelineContext].
      */
-    public suspend fun PipelineContext<S, I, A>.onIntent(intent: I): I? = intent
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onIntent(intent: I): I? = intent
 
     /**
      * A callback that is invoked each time an [MVIAction] has been sent.
@@ -123,7 +124,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * * Return [action] to continue processing, leaving the it unmodified.
      * * Execute other operations using [PipelineContext]
      */
-    public suspend fun PipelineContext<S, I, A>.onAction(action: A): A? = action
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onAction(action: A): A? = action
 
     /**
      * A callback that is invoked when [Store] handles an exception.
@@ -138,7 +140,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * If none of the plugins handles the exception (returns null), **the exception is rethrown and the store fails**.
      * Register a [pro.respawn.flowmvi.plugins.recoverPlugin] to recover from all exceptions.
      */
-    public suspend fun PipelineContext<S, I, A>.onException(e: Exception): Exception? = e
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onException(e: Exception): Exception? = e
 
     /**
      * A callback that is invoked **each time** the [Store.start] is called.
@@ -147,7 +150,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      *   exception, the store will just not work.
      * * Plugins that use `onSubscribe` will also not get their events until this is run.
      */
-    public suspend fun PipelineContext<S, I, A>.onStart(): Unit = Unit
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onStart(): Unit = Unit
 
     /**
      * A callback to be executed each time [Store.subscribe] is called.
@@ -165,7 +169,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * * Suspending in this function will prevent other plugins from receiving the subscription event (i.e. next plugins
      *   that use [onSubscribe] will wait for this one to complete.
      */
-    public suspend fun PipelineContext<S, I, A>.onSubscribe(newSubscriberCount: Int): Unit = Unit
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onSubscribe(newSubscriberCount: Int): Unit = Unit
 
     /**
      * A callback to be executed when the subscriber cancels its subscription job (unsubscribes).
@@ -179,7 +184,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * * Suspending in this function will prevent other plugins from receiving the subscription event (i.e. next plugins
      *   that use [onUnsubscribe] will wait for this one to complete.
      */
-    public suspend fun PipelineContext<S, I, A>.onUnsubscribe(newSubscriberCount: Int): Unit = Unit
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onUnsubscribe(newSubscriberCount: Int): Unit = Unit
 
     /**
      * Invoked when [Store.close] is invoked.
@@ -195,7 +201,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * @param e the exception the store is closed with. Can be null for normal completions.
      * For everything except [kotlinx.coroutines.CancellationException]s, will not be null.
      */
-    public fun ShutdownContext<S, I, A>.onStop(e: Exception?): Unit = Unit
+    context(ctx: ShutdownContext<S, I, A>)
+    public fun onStop(e: Exception?): Unit = Unit
 
     /**
      * Called when an intent is not delivered to the store.
@@ -213,7 +220,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * and must **not throw exceptions**, or the store will crash. The [onException] block will **not** handle
      * exceptions in this function.
      */
-    public fun ShutdownContext<S, I, A>.onUndeliveredIntent(intent: I): Unit = Unit
+    context(ctx: ShutdownContext<S, I, A>)
+    public fun onUndeliveredIntent(intent: I): Unit = Unit
 
     /**
      * Called when an action is not delivered to the store.
@@ -232,7 +240,8 @@ public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyP
      * and must **not throw exceptions**, or the store will crash. The [onException] block will **not** handle
      * exceptions in this function.
      */
-    public fun ShutdownContext<S, I, A>.onUndeliveredAction(action: A): Unit = Unit
+    context(ctx: ShutdownContext<S, I, A>)
+    public fun onUndeliveredAction(action: A): Unit = Unit
 
     override fun hashCode(): Int
     override fun equals(other: Any?): Boolean
