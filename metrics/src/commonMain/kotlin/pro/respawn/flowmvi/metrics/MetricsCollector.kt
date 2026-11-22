@@ -180,9 +180,10 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         onException { child, e -> recordException(child, e) }
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordStart(child: StorePlugin<S, I, A>) {
-        lastConfig.value = config
-        val shouldTrackTtfs = states.value == config.initial
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordStart(child: StorePlugin<S, I, A>) {
+        lastConfig.value = ctx.config
+        val shouldTrackTtfs = ctx.states.value == ctx.config.initial
         startedInInitialState.value = shouldTrackTtfs
         timeToFirstStateNanos.value = UnrecordedDurationNanos
         timeToFirstStateStart.value = if (shouldTrackTtfs) timeSource.markNow() else null
@@ -227,7 +228,8 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         return mapped
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordIntent(child: StorePlugin<S, I, A>, intent: I): I? {
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordIntent(child: StorePlugin<S, I, A>, intent: I): I? {
         val start = timeSource.markNow()
         val queueInstant = intentQueue.removeFirstOrNull()
         val queuedDuration = queueInstant?.elapsedNow()
@@ -256,7 +258,8 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         child.onUndeliveredIntent(intent)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordAction(child: StorePlugin<S, I, A>, action: A): A? {
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordAction(child: StorePlugin<S, I, A>, action: A): A? {
         val start = timeSource.markNow()
         actionQueue.addLast(start)
         updateActionOccupancy()
@@ -295,7 +298,8 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         child.onUndeliveredAction(action)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordState(
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordState(
         child: StorePlugin<S, I, A>,
         old: S,
         new: S,
@@ -306,22 +310,25 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         stateTransitions.incrementAndGet()
         val vetoed = value == null || value === old
         if (vetoed) stateVetoed.incrementAndGet()
-        recordTimeToFirstState(value, config.initial)
+        recordTimeToFirstState(value, ctx.config.initial)
         send(Event.StateProcessed(duration))
         return value
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordSubscribe(child: StorePlugin<S, I, A>, count: Int) {
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordSubscribe(child: StorePlugin<S, I, A>, count: Int) {
         handleSubscriptionChange(count)
         child.onSubscribe(count)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordUnsubscribe(child: StorePlugin<S, I, A>, count: Int) {
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordUnsubscribe(child: StorePlugin<S, I, A>, count: Int) {
         handleSubscriptionChange(count)
         child.onUnsubscribe(count)
     }
 
-    private suspend fun PipelineContext<S, I, A>.recordException(
+    context(ctx: PipelineContext<S, I, A>)
+    private suspend fun recordException(
         child: StorePlugin<S, I, A>,
         e: Exception,
     ): Exception? {
