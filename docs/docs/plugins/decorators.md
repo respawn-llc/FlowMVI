@@ -34,7 +34,7 @@ val decorator = decorator<State, Intent, Action> {
     name = "FilterInvalidDecorator"
     onIntent { chain, intent ->
         if (intent is InvalidIntent) return@onIntent null
-        chain.run { onIntent(intent) } // returns the result of the chain
+        chain.onIntent(intent) // returns the result of the chain
     }
 }
 
@@ -44,14 +44,6 @@ val decoratedPlugin = decorator decorates plugin
 As you can see, there is an additional parameter `chain` in the decorator callback. It is the plugin that we
 wrap. Decorators can be applied to any plugin, so you can't know which exact plugin you are wrapping except by querying
 its `name`.
-
-:::info
-
-The `chain` parameter is temporary and will become a receiver with a future Kotlin release. Right now,
-calling the chain is awkward because you have to always wrap it in a `run` block to bring the `PipelineContext` into
-the scope.
-
-:::
 
 :::warning
 

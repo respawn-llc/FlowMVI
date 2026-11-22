@@ -8,18 +8,28 @@ Use this file for exact callback signatures and rules. These are the full API su
 public interface StorePlugin<S : MVIState, I : MVIIntent, A : MVIAction> : LazyPlugin<S, I, A> {
     public val name: String?
 
-    public suspend fun PipelineContext<S, I, A>.onState(old: S, new: S): S? = new
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onState(old: S, new: S): S? = new
     public fun onIntentEnqueue(intent: I): I? = intent
     public fun onActionDispatch(action: A): A? = action
-    public suspend fun PipelineContext<S, I, A>.onIntent(intent: I): I? = intent
-    public suspend fun PipelineContext<S, I, A>.onAction(action: A): A? = action
-    public suspend fun PipelineContext<S, I, A>.onException(e: Exception): Exception? = e
-    public suspend fun PipelineContext<S, I, A>.onStart(): Unit = Unit
-    public suspend fun PipelineContext<S, I, A>.onSubscribe(newSubscriberCount: Int): Unit = Unit
-    public suspend fun PipelineContext<S, I, A>.onUnsubscribe(newSubscriberCount: Int): Unit = Unit
-    public fun ShutdownContext<S, I, A>.onStop(e: Exception?): Unit = Unit
-    public fun ShutdownContext<S, I, A>.onUndeliveredIntent(intent: I): Unit = Unit
-    public fun ShutdownContext<S, I, A>.onUndeliveredAction(action: A): Unit = Unit
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onIntent(intent: I): I? = intent
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onAction(action: A): A? = action
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onException(e: Exception): Exception? = e
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onStart(): Unit = Unit
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onSubscribe(newSubscriberCount: Int): Unit = Unit
+    context(ctx: PipelineContext<S, I, A>)
+    public suspend fun onUnsubscribe(newSubscriberCount: Int): Unit = Unit
+    context(ctx: ShutdownContext<S, I, A>)
+    public fun onStop(e: Exception?): Unit = Unit
+    context(ctx: ShutdownContext<S, I, A>)
+    public fun onUndeliveredIntent(intent: I): Unit = Unit
+    context(ctx: ShutdownContext<S, I, A>)
+    public fun onUndeliveredAction(action: A): Unit = Unit
 }
 ```
 
@@ -129,7 +139,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> {
 
 ### Decorator example (callback forwarding)
 
-This pattern is required: you **must** forward to `child.run { onIntent(...) }` (or the appropriate callback), otherwise the chain stops.
+Call `child.onIntent(intent)` to forward the intent.
 
 ```kotlin
 @FlowMVIDSL
@@ -144,7 +154,7 @@ fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
         handle.job?.cancelAndJoin()
         val job = launch {
             delay(timeout)
-            child.run { onIntent(intent) }
+            child.onIntent(intent)
         }
         handle.set(job)
         null
@@ -152,7 +162,7 @@ fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
 
     onStop { child, e ->
         handle.set(null)
-        child.run { onStop(e) }
+        child.onStop(e)
     }
 }
 ```
