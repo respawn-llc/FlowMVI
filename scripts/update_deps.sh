@@ -16,8 +16,7 @@ cache_dir="$(pwd)/docs/.npm-cache"
 
 (
   cd docs
-  # Newer llms plugin versions move public Markdown URLs.
-  npm_config_cache="$cache_dir" npx npm-check-updates -u --reject docusaurus-plugin-llms
+  npm_config_cache="$cache_dir" npx npm-check-updates -u
   npm_config_cache="$cache_dir" npm install
   npm_config_cache="$cache_dir" npm outdated || true
 )

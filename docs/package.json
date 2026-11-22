@@ -6,6 +6,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "postbuild": "node -e \"require('node:fs').copyFileSync('build/docs.md', 'build/docs/README.md')\"",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -29,7 +30,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.2",
     "@docusaurus/types": "^3.10.2",
-    "docusaurus-plugin-llms": "^0.4.0",
+    "docusaurus-plugin-llms": "^0.6.1",
     "typescript": "~7.0.2"
   },
   "overrides": {
