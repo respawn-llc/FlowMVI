@@ -57,31 +57,31 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
     public var name: String? = null
 
     /**
-     * Wraps the [StorePlugin.onStart] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onStart] method of the child plugin passed in the [block] parameter.
      *
      *
-     * The child's [StorePlugin.onStart] method will **not** be invoked
-     * unless you manually call [StorePlugin.onStart] inside this block!
+     * The child's [DecoratorChain.onStart] method will **not** be invoked
+     * unless you manually call [DecoratorChain.onStart] inside this block!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
     public fun onStart(block: Decorate<S, I, A>): Unit = ::_onStart.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onIntentEnqueue] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onIntentEnqueue] method of the child plugin passed in the [block] parameter.
      *
-     * The [StorePlugin.onIntentEnqueue] method will **not** be invoked
-     * unless you manually call [StorePlugin.onIntentEnqueue] inside this block!
+     * The [DecoratorChain.onIntentEnqueue] method will **not** be invoked
+     * unless you manually call [DecoratorChain.onIntentEnqueue] inside this block!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
     public fun onIntentEnqueue(block: DecorateValueNonSuspend<S, I, A, I>): Unit = ::_onIntentEnqueue.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onIntent] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onIntent] method of the child plugin passed in the [block] parameter.
      *
-     * The [StorePlugin.onIntent] method will **not** be invoked
-     * unless you manually call [StorePlugin.onIntent] inside this block!
+     * The [DecoratorChain.onIntent] method will **not** be invoked
+     * unless you manually call [DecoratorChain.onIntent] inside this block!
      *
      * The return value of [block] will mean what the store reports as the result of handling the intent.
      * Use `null` to consider the intent handled. Use the return value of `chain.onIntent` to delegate the result.
@@ -91,10 +91,10 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
     public fun onIntent(block: DecorateValue<S, I, A, I>): Unit = ::_onIntent.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onState] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onState] method of the child plugin passed in the [block] parameter.
      *
-     * The child's [StorePlugin.onState] method will **not** be invoked
-     * unless you manually call [StorePlugin.onState] inside this block.
+     * The child's [DecoratorChain.onState] method will **not** be invoked
+     * unless you manually call [DecoratorChain.onState] inside this block.
      *
      * The return value of [block] will mean what the **state will be set to**, i.e. the end value.
      * Use `null` to not change the state. Use the return value of `chain.onState` to delegate the result.
@@ -104,10 +104,10 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
     public fun onState(block: DecorateState<S, I, A>): Unit = ::_onState.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onAction] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onAction] method of the child plugin passed in the [block] parameter.
      *
-     * The child [StorePlugin.onAction] method will **not** be invoked
-     * unless you manually call [StorePlugin.onAction] inside this block.
+     * The child [DecoratorChain.onAction] method will **not** be invoked
+     * unless you manually call [DecoratorChain.onAction] inside this block.
      *
      * The return value of [block] will mean what action will be actually send to subscribers, i.e. the end result.
      * Use `null` to not send anything. Use the return value of `chain.onAction` to delegate the result.
@@ -117,20 +117,20 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
     public fun onAction(block: DecorateValue<S, I, A, A>): Unit = ::_onAction.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onActionDispatch] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onActionDispatch] method of the child plugin passed in the [block] parameter.
      *
-     * The child [StorePlugin.onActionDispatch] method will **not** be invoked
-     * unless you manually call [StorePlugin.onActionDispatch] inside this block.
+     * The child [DecoratorChain.onActionDispatch] method will **not** be invoked
+     * unless you manually call [DecoratorChain.onActionDispatch] inside this block.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
     public fun onActionDispatch(block: DecorateValueNonSuspend<S, I, A, A>): Unit = ::_onActionDispatch.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onException] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onException] method of the child plugin passed in the [block] parameter.
      *
-     * The plugin's [StorePlugin.onException] method will **not** be invoked,
-     * unless you manually call [StorePlugin.onException] inside this block!
+     * The plugin's [DecoratorChain.onException] method will **not** be invoked,
+     * unless you manually call [DecoratorChain.onException] inside this block!
      *
      * The return value of [block] will mean what the store reports as the result of handling the exception.
      * Use `null` to swallow the exception. Use the return value of `chain.onException` to delegate the result.
@@ -140,30 +140,30 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
     public fun onException(block: DecorateValue<S, I, A, Exception>): Unit = ::_onException.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onSubscribe] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onSubscribe] method of the child plugin passed in the [block] parameter.
      *
      * The child plugin will not know an event has occurred unless
-     * you call the [StorePlugin.onSubscribe] method inside this block manually!
+     * you call the [DecoratorChain.onSubscribe] method inside this block manually!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
     public fun onSubscribe(block: DecorateArg<S, I, A, Int>): Unit = ::_onSubscribe.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onUnsubscribe] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onUnsubscribe] method of the child plugin passed in the [block] parameter.
      *
      * The child plugin will not know an event has occurred unless
-     * you call the [StorePlugin.onUnsubscribe] method inside this block manually!
+     * you call the [DecoratorChain.onUnsubscribe] method inside this block manually!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
     public fun onUnsubscribe(block: DecorateArg<S, I, A, Int>): Unit = ::_onUnsubscribe.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onStop] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onStop] method of the child plugin passed in the [block] parameter.
      *
      * The child plugin will not know the store has stopped unless
-     * you call the [StorePlugin.onStop] method inside this block manually. Be careful of resources not being properly
+     * you call the [DecoratorChain.onStop] method inside this block manually. Be careful of resources not being properly
      * cleaned up!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
@@ -171,20 +171,20 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
     public fun onStop(block: DecorateShutdown<S, I, A, Exception?>): Unit = ::_onStop.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onUndeliveredIntent] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onUndeliveredIntent] method of the child plugin passed in the [block] parameter.
      *
      * The child plugin will not know an event has occurred unless
-     * you call the [StorePlugin.onUndeliveredIntent] method inside this block manually!
+     * you call the [DecoratorChain.onUndeliveredIntent] method inside this block manually!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
     public fun onUndeliveredIntent(block: DecorateShutdown<S, I, A, I>): Unit = ::_onUndeliveredIntent.setOnce(block)
 
     /**
-     * Wraps the [StorePlugin.onUndeliveredAction] method of the child plugin passed in the [block] parameter.
+     * Wraps the [DecoratorChain.onUndeliveredAction] method of the child plugin passed in the [block] parameter.
      *
      * The child plugin will not know an event has occurred unless
-     * you call the [StorePlugin.onUndeliveredAction] method inside this block manually!
+     * you call the [DecoratorChain.onUndeliveredAction] method inside this block manually!
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */

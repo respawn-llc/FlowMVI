@@ -4,11 +4,18 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.launch
+import pro.respawn.flowmvi.annotation.NotIntendedForInheritance
 import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.PipelineContext
+import pro.respawn.flowmvi.api.StorePlugin
 import pro.respawn.flowmvi.decorator.decoratedWith
 import pro.respawn.flowmvi.decorator.decorates
 import pro.respawn.flowmvi.dsl.plugin
+import pro.respawn.flowmvi.dsl.state
+import pro.respawn.flowmvi.dsl.updateStateImmediate
 import pro.respawn.flowmvi.plugins.timeTravelPlugin
 import pro.respawn.flowmvi.test.plugin.test
 import pro.respawn.flowmvi.util.TestAction
@@ -18,7 +25,7 @@ import pro.respawn.flowmvi.util.configure
 import pro.respawn.flowmvi.util.testDecorator
 import pro.respawn.flowmvi.util.testTimeTravel
 
-@OptIn(DelicateStoreApi::class)
+@OptIn(DelicateStoreApi::class, NotIntendedForInheritance::class)
 class StoreDecoratorTest : FreeSpec({
     configure()
 
@@ -144,17 +151,26 @@ class StoreDecoratorTest : FreeSpec({
         }
     }
     "given an intent decorator with implicit access to the pipeline" - {
-        "then the decorator and downstream plugin operate on the same state" {
+        "then it forwards to a handwritten plugin in the same pipeline" {
             val nextState = TestState.SomeData(2)
-            val plugin = plugin<TestState, TestIntent, TestAction> {
-                onIntent { intent ->
+            val plugin = object : StorePlugin<TestState, TestIntent, TestAction> {
+                override val name = "handwritten"
+
+                override suspend fun PipelineContext<TestState, TestIntent, TestAction>.onIntent(
+                    intent: TestIntent,
+                ): TestIntent {
                     withState { this shouldBe nextState }
-                    intent
+                    return intent
                 }
+
+                override fun equals(other: Any?): Boolean = this === other
+                override fun hashCode(): Int = name.hashCode()
+                override fun toString(): String = name
             }
             val decorator = testDecorator {
                 onIntent { chain, intent ->
-                    setTestState(nextState)
+                    chain.name shouldBe plugin.name
+                    updateState { nextState }
                     chain.onIntent(intent)
                 }
             }
@@ -162,6 +178,40 @@ class StoreDecoratorTest : FreeSpec({
                 val intent = TestIntent { }
                 onIntent(intent) shouldBe intent
                 withState { this shouldBe nextState }
+            }
+        }
+        "then its launched coroutines are cancelled with the pipeline" {
+            lateinit var job: Job
+            val decorator = testDecorator {
+                onIntent { chain, intent ->
+                    job = launch { awaitCancellation() }
+                    chain.onIntent(intent)
+                }
+            }
+            (timeTravelPlugin decoratedWith decorator).test(TestState.Some) {
+                onStart()
+                val intent = TestIntent { }
+                onIntent(intent) shouldBe intent
+                job.isActive shouldBe true
+                closeAndWait()
+                job.isCancelled shouldBe true
+            }
+        }
+    }
+    "given a shutdown decorator with implicit access to the remaining state" - {
+        "then it can update that state and forward stop" {
+            val nextState = TestState.SomeData(2)
+            val decorator = testDecorator {
+                onStop { chain, cause ->
+                    updateStateImmediate { nextState }
+                    chain.onStop(cause)
+                }
+            }
+            (timeTravelPlugin decoratedWith decorator).test(TestState.Some) {
+                onStart()
+                onStop(null)
+                state shouldBe nextState
+                timeTravel.stops shouldBe 1
             }
         }
     }
@@ -258,6 +308,3 @@ class StoreDecoratorTest : FreeSpec({
         }
     }
 })
-
-context(pipeline: PipelineContext<TestState, TestIntent, TestAction>)
-private suspend fun setTestState(state: TestState): Unit = pipeline.updateState { state }

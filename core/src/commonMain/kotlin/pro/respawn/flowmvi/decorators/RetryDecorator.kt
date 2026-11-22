@@ -9,7 +9,6 @@ import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
-import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.api.StorePlugin
 import pro.respawn.flowmvi.decorator.PluginDecorator
 import pro.respawn.flowmvi.decorator.decorator
@@ -128,9 +127,8 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecor
 ): PluginDecorator<S, I, A> = decorator {
     this.name = name
     onIntent { chain, intent ->
-        val pipeline = contextOf<PipelineContext<S, I, A>>()
-        pipeline.retryRecursive(strategy, { selector(intent, it) }) { i ->
-            if (i > RetryStrategy.FirstAttempt) pipeline.config.logger.warn { "Retry attempt #$i for $intent" }
+        retryRecursive(strategy, { selector(intent, it) }) { i ->
+            if (i > RetryStrategy.FirstAttempt) config.logger.warn { "Retry attempt #$i for $intent" }
             chain.onIntent(intent)
         }
     }
@@ -153,9 +151,8 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecor
 ): PluginDecorator<S, I, A> = decorator {
     this.name = name
     onAction { chain, action ->
-        val pipeline = contextOf<PipelineContext<S, I, A>>()
-        pipeline.retryRecursive(strategy, { selector(action, it) }) { i ->
-            if (i > RetryStrategy.FirstAttempt) pipeline.config.logger.warn { "Retry attempt #$i for $action" }
+        retryRecursive(strategy, { selector(action, it) }) { i ->
+            if (i > RetryStrategy.FirstAttempt) config.logger.warn { "Retry attempt #$i for $action" }
             chain.onAction(action)
         }
     }

@@ -61,6 +61,7 @@ internal fun <
     I : MVIIntent,
     A : MVIAction
     > StorePlugin<S, I, A>.asInstance() = typed<PluginInstance<S, I, A>>() ?: PluginInstance(
+    name = name,
     onState = { old: S, new: S -> onState(old, new) },
     onIntentEnqueue = { intent: I -> onIntentEnqueue(intent) },
     onIntent = { intent: I -> onIntent(intent) },

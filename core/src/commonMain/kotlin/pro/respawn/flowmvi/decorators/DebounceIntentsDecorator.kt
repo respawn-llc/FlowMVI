@@ -52,10 +52,9 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator
 
     onIntent { chain, intent ->
         handle.job?.cancelAndJoin()
-        val pipeline = contextOf<PipelineContext<S, I, A>>()
-        val duration = pipeline.timeoutSelector(intent)
+        val duration = timeoutSelector(intent)
         if (duration <= ZERO) return@onIntent chain.onIntent(intent)
-        val job = pipeline.launch {
+        val job = launch {
             delay(duration)
             chain.onIntent(intent)
         }

@@ -31,7 +31,7 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> intentTimeoutDecorator(
     onIntent { chain, intent ->
         val outcome = withTimeoutOrNull(timeout) {
             chain.onIntent(intent) to true
-        } ?: return@onIntent contextOf<PipelineContext<S, I, A>>().onTimeout(intent)
+        } ?: return@onIntent onTimeout(intent)
         outcome.first
     }
 }

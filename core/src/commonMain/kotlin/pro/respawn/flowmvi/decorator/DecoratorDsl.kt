@@ -12,25 +12,25 @@ import pro.respawn.flowmvi.impl.plugin.PluginInstance
 import pro.respawn.flowmvi.impl.plugin.asInstance
 
 public typealias DecorateValue<S, I, A, V> = (
-suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>, it: V) -> V?
+suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>, it: V) -> V?
 )
 
-public typealias DecorateValueNonSuspend<S, I, A, V> = (chain: StorePlugin<S, I, A>, it: V) -> V?
+public typealias DecorateValueNonSuspend<S, I, A, V> = (chain: DecoratorChain<S, I, A>, it: V) -> V?
 
 public typealias DecorateState<S, I, A> = (
-suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>, old: S, new: S) -> S?
+suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>, old: S, new: S) -> S?
 )
 
 public typealias Decorate<S, I, A> = (
-suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>) -> Unit
+suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>) -> Unit
 )
 
 public typealias DecorateArg<S, I, A, V> = (
-suspend context(PipelineContext<S, I, A>) (chain: StorePlugin<S, I, A>, it: V) -> Unit
+suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>, it: V) -> Unit
 )
 
 public typealias DecorateShutdown<S, I, A, V> = (
-context(ShutdownContext<S, I, A>) (chain: StorePlugin<S, I, A>, e: V) -> Unit
+ShutdownContext<S, I, A>.(chain: DecoratorChain<S, I, A>, e: V) -> Unit
 )
 
 /**
@@ -66,49 +66,53 @@ public infix fun <S : MVIState, I : MVIIntent, A : MVIAction> StorePlugin<S, I, 
 ): StorePlugin<S, I, A> = decorators.fold(this) { next, decorator -> next decoratedWith decorator }
 internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S, I, A>.decorate(
     decorator: PluginDecorator<S, I, A>,
-): PluginInstance<S, I, A> = copy(
-    name = decorator.name,
-    onState = wrapNotNull(onState, decorator.onState) { wrap ->
-        { old, new -> wrap(this@decorate, old, new) }
-    },
-    onIntent = wrapNotNull(onIntent, decorator.onIntent) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onIntentEnqueue = wrapNotNull(onIntentEnqueue, decorator.onIntentEnqueue) { wrap ->
-        { intent ->
-            wrap(this@decorate, intent)
+): PluginInstance<S, I, A> {
+    val chain = DecoratorChain(this)
+    return copy(
+        name = decorator.name,
+        onState = wrapNotNull(onState, decorator.onState) { wrap ->
+            { old, new -> wrap(chain, old, new) }
+        },
+        onIntent = wrapNotNull(onIntent, decorator.onIntent) { wrap ->
+            { wrap(chain, it) }
+        },
+        onIntentEnqueue = wrapNotNull(onIntentEnqueue, decorator.onIntentEnqueue) { wrap ->
+            { intent ->
+                wrap(chain, intent)
+            }
+        },
+        onAction = wrapNotNull(onAction, decorator.onAction) { wrap ->
+            { wrap(chain, it) }
+        },
+        onActionDispatch = wrapNotNull(onActionDispatch, decorator.onActionDispatch) { wrap ->
+            { action ->
+                wrap(chain, action)
+            }
+        },
+        onException = wrapNotNull(onException, decorator.onException) { wrap ->
+            { wrap(chain, it) }
+        },
+        onStart = wrapNotNull(onStart, decorator.onStart) { wrap ->
+            { wrap(chain) }
+        },
+        onSubscribe = wrapNotNull(onSubscribe, decorator.onSubscribe) { wrap ->
+            { wrap(chain, it) }
+        },
+        onUnsubscribe = wrapNotNull(onUnsubscribe, decorator.onUnsubscribe) { wrap ->
+            { wrap(chain, it) }
+        },
+        onStop = wrapNotNull(onStop, decorator.onStop) { wrap ->
+            { wrap(chain, it) }
+        },
+        onUndeliveredIntent = wrapNotNull(onUndeliveredIntent, decorator.onUndeliveredIntent) { wrap ->
+            { wrap(chain, it) }
+        },
+        onUndeliveredAction = wrapNotNull(onUndeliveredAction, decorator.onUndeliveredAction) { wrap ->
+            { wrap(chain, it) }
         }
-    },
-    onAction = wrapNotNull(onAction, decorator.onAction) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onActionDispatch = wrapNotNull(onActionDispatch, decorator.onActionDispatch) { wrap ->
-        { action ->
-            wrap(this@decorate, action)
-        }
-    },
-    onException = wrapNotNull(onException, decorator.onException) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onStart = wrapNotNull(onStart, decorator.onStart) { wrap ->
-        { wrap(this@decorate) }
-    },
-    onSubscribe = wrapNotNull(onSubscribe, decorator.onSubscribe) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onUnsubscribe = wrapNotNull(onUnsubscribe, decorator.onUnsubscribe) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onStop = wrapNotNull(onStop, decorator.onStop) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onUndeliveredIntent = wrapNotNull(onUndeliveredIntent, decorator.onUndeliveredIntent) { wrap ->
-        { wrap(this@decorate, it) }
-    },
-    onUndeliveredAction = wrapNotNull(onUndeliveredAction, decorator.onUndeliveredAction) { wrap ->
-        { wrap(this@decorate, it) }
-    }
-)
+    )
+}
+
 private inline fun <H, W> wrapNotNull(
     action: H?,
     wrapper: W?,

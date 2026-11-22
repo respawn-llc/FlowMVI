@@ -46,17 +46,17 @@ internal class TestPipelineContext<S : MVIState, I : MVIIntent, A : MVIAction> @
     @DelicateStoreApi
     override fun send(action: A) {
         ensureStarted()
-        launch { plugin.onAction(action) }
+        launch { with(plugin) { onAction(action) } }
     }
 
     override suspend fun action(action: A) {
         ensureStarted()
-        plugin.onAction(action)
+        return plugin.run { onAction(action) }
     }
 
-    override suspend fun emit(intent: I) {
+    override suspend fun emit(intent: I): Unit = with(plugin) {
         ensureStarted()
-        plugin.onIntent(intent)
+        onIntent(intent)
     }
 
     override fun intent(intent: I) {
@@ -64,9 +64,9 @@ internal class TestPipelineContext<S : MVIState, I : MVIIntent, A : MVIAction> @
         launch { emit(intent) }
     }
 
-    override suspend fun updateState(transform: suspend S.() -> S) {
+    override suspend fun updateState(transform: suspend S.() -> S) = with(plugin) {
         ensureStarted()
-        updateStateImmediate { plugin.onState(this, transform()) ?: this }
+        updateStateImmediate { onState(this, transform()) ?: this }
     }
 
     override suspend fun withState(block: suspend S.() -> Unit) {

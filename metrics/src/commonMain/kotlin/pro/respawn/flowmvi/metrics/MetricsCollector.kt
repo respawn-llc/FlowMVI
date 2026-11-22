@@ -17,9 +17,9 @@ import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
 import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.api.StoreConfiguration
-import pro.respawn.flowmvi.api.StorePlugin
 import pro.respawn.flowmvi.api.UnrecoverableException
 import pro.respawn.flowmvi.api.context.ShutdownContext
+import pro.respawn.flowmvi.decorator.DecoratorChain
 import pro.respawn.flowmvi.decorator.PluginDecorator
 import pro.respawn.flowmvi.decorator.decorator
 import pro.respawn.flowmvi.metrics.Quantile.Q50
@@ -161,8 +161,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
             runId.value = id
             val previous = currentRun.getAndSet(Run(id, channel, job))
             check(previous == null || previous.job.isCompleted) {
-                val pipeline = contextOf<PipelineContext<S, I, A>>()
-                "MetricsCollector started with previous run still active for store=${pipeline.config.name}"
+                "MetricsCollector started with previous run still active for store=${config.name}"
             }
             recordStart(child)
         }
@@ -180,7 +179,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(pipeline: PipelineContext<S, I, A>)
-    private suspend fun recordStart(child: StorePlugin<S, I, A>) {
+    private suspend fun recordStart(child: DecoratorChain<S, I, A>) {
         lastConfig.value = pipeline.config
         val shouldTrackTtfs = pipeline.states.value == pipeline.config.initial
         startedInInitialState.value = shouldTrackTtfs
@@ -195,7 +194,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(shutdown: ShutdownContext<S, I, A>)
-    private fun recordStop(child: StorePlugin<S, I, A>, e: Exception?) {
+    private fun recordStop(child: DecoratorChain<S, I, A>, e: Exception?) {
         stopCount.incrementAndGet()
         timeToFirstStateStart.value = null
         currentStart.getAndSet(null)?.let { startedAt ->
@@ -212,7 +211,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         }
     }
 
-    private fun recordIntentEnqueue(child: StorePlugin<S, I, A>, intent: I): I? {
+    private fun recordIntentEnqueue(child: DecoratorChain<S, I, A>, intent: I): I? {
         intentTotal.incrementAndGet()
         val mapped = child.onIntentEnqueue(intent) ?: run {
             intentDropped.incrementAndGet()
@@ -229,7 +228,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(_: PipelineContext<S, I, A>)
-    private suspend fun recordIntent(child: StorePlugin<S, I, A>, intent: I): I? {
+    private suspend fun recordIntent(child: DecoratorChain<S, I, A>, intent: I): I? {
         val start = timeSource.markNow()
         val queueInstant = intentQueue.removeFirstOrNull()
         val queuedDuration = queueInstant?.elapsedNow()
@@ -251,7 +250,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(_: ShutdownContext<S, I, A>)
-    private fun recordUndeliveredIntent(child: StorePlugin<S, I, A>, intent: I) {
+    private fun recordUndeliveredIntent(child: DecoratorChain<S, I, A>, intent: I) {
         intentUndelivered.incrementAndGet()
         intentOverflows.incrementAndGet()
         intentQueue.removeFirstOrNull()
@@ -260,7 +259,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(_: PipelineContext<S, I, A>)
-    private suspend fun recordAction(child: StorePlugin<S, I, A>, action: A): A? {
+    private suspend fun recordAction(child: DecoratorChain<S, I, A>, action: A): A? {
         val start = timeSource.markNow()
         actionQueue.addLast(start)
         updateActionOccupancy()
@@ -271,7 +270,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
         return result
     }
 
-    private fun recordActionDispatch(child: StorePlugin<S, I, A>, action: A): A? {
+    private fun recordActionDispatch(child: DecoratorChain<S, I, A>, action: A): A? {
         val dispatchStart = timeSource.markNow()
         val queued = actionQueue.removeFirstOrNull()
         val queueDurationMillis = queued?.elapsedNow()
@@ -292,7 +291,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(_: ShutdownContext<S, I, A>)
-    private fun recordUndeliveredAction(child: StorePlugin<S, I, A>, action: A) {
+    private fun recordUndeliveredAction(child: DecoratorChain<S, I, A>, action: A) {
         actionUndelivered.incrementAndGet()
         actionOverflows.incrementAndGet()
         actionQueue.removeFirstOrNull()
@@ -302,7 +301,7 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
 
     context(pipeline: PipelineContext<S, I, A>)
     private suspend fun recordState(
-        child: StorePlugin<S, I, A>,
+        child: DecoratorChain<S, I, A>,
         old: S,
         new: S,
     ): S? {
@@ -318,20 +317,20 @@ internal class MetricsCollector<S : MVIState, I : MVIIntent, A : MVIAction>(
     }
 
     context(_: PipelineContext<S, I, A>)
-    private suspend fun recordSubscribe(child: StorePlugin<S, I, A>, count: Int) {
+    private suspend fun recordSubscribe(child: DecoratorChain<S, I, A>, count: Int) {
         handleSubscriptionChange(count)
         child.onSubscribe(count)
     }
 
     context(_: PipelineContext<S, I, A>)
-    private suspend fun recordUnsubscribe(child: StorePlugin<S, I, A>, count: Int) {
+    private suspend fun recordUnsubscribe(child: DecoratorChain<S, I, A>, count: Int) {
         handleSubscriptionChange(count)
         child.onUnsubscribe(count)
     }
 
     context(_: PipelineContext<S, I, A>)
     private suspend fun recordException(
-        child: StorePlugin<S, I, A>,
+        child: DecoratorChain<S, I, A>,
         e: Exception,
     ): Exception? {
         exceptionTotal.incrementAndGet()

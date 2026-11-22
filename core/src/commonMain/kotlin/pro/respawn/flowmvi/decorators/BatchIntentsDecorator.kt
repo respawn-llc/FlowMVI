@@ -103,17 +103,16 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
     this.name = name
     var job: Job? = null
     if (mode is BatchingMode.Time) onStart { child ->
-        val pipeline = contextOf<PipelineContext<S, I, A>>()
-        job = pipeline.launch(start = CoroutineStart.LAZY) {
+        job = launch(start = CoroutineStart.LAZY) {
             while (isActive) {
                 delay(mode.duration)
                 val intents = queue.flush().ifEmpty { continue }
-                pipeline.config.logger.debug(name) {
+                config.logger.debug(name) {
                     "Flushing ${intents.size} after batching for ${mode.duration}"
                 }
                 val _ = intents.fold<I, I?>(null) { _, next ->
                     val result = child.onIntent(next) ?: return@fold null
-                    pipeline.onUnhandledIntent(result)
+                    onUnhandledIntent(result)
                     result
                 }
             }
@@ -130,11 +129,10 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
             is BatchingMode.Amount -> {
                 val intents = queue.pushAndFlushIfReached(intent, mode.size)
                 if (intents.isEmpty()) return@onIntent null
-                val pipeline = contextOf<PipelineContext<S, I, A>>()
-                pipeline.config.logger.debug(name) { "Flushing ${intents.size} after batching" }
+                config.logger.debug(name) { "Flushing ${intents.size} after batching" }
                 intents.fold(null) { _, next ->
                     val result = child.onIntent(next) ?: return@fold null
-                    pipeline.onUnhandledIntent(result)
+                    onUnhandledIntent(result)
                     result
                 }
             }
