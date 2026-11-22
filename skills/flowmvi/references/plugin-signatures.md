@@ -58,7 +58,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I
 ): Unit
 ```
 
-
 ### Recover
 
 Handles exceptions thrown by store jobs or plugin callbacks. Return `null` to swallow or the exception to propagate.
@@ -429,24 +428,28 @@ Debounces intents like `flow.debounce`, forwarding only the last intent after a 
 package pro.respawn.flowmvi.decorators
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
     timeout: Duration,
     name: String? = "DebounceIntents",
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
     name: String? = "DebounceIntents",
     timeoutSelector: suspend PipelineContext<S, I, A>.(I) -> Duration,
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.debounceIntents(
     timeout: Duration,
     name: String? = "DebounceIntents",
 ): Unit
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.debounceIntents(
     name: String? = "DebounceIntents",
     timeoutSelector: suspend PipelineContext<S, I, A>.(I) -> Duration,
@@ -461,23 +464,27 @@ Drops repeated intents/actions based on equality, keeping only the latest distin
 package pro.respawn.flowmvi.decorators
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateIntentsDecorator(
     name: String? = "ConflateIntents",
     crossinline compare: ((it: I, other: I) -> Boolean) = MVIIntent::equals,
 ): PluginDecorator<S, I, A>
 
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateActionsDecorator(
     name: String? = "ConflateActions",
     crossinline compare: ((it: A, other: A) -> Boolean) = MVIAction::equals,
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.conflateIntents(
     name: String? = "ConflateIntents",
     crossinline compare: (it: I, other: I) -> Boolean = MVIIntent::equals,
 ): Unit
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.conflateActions(
     name: String? = "ConflateActions",
     crossinline compare: (it: A, other: A) -> Boolean = MVIAction::equals,
@@ -492,6 +499,7 @@ Batches intents by time or amount and flushes them in order. Use to reduce inten
 package pro.respawn.flowmvi.decorators
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
     mode: BatchingMode,
     queue: BatchQueue<I> = BatchQueue(),
@@ -500,6 +508,7 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> batchIntentsDecorator(
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.batchIntents(
     mode: BatchingMode,
     name: String? = "BatchIntentsDecorator",
@@ -515,6 +524,7 @@ Fails intents that do not finish within a timeout. Use to avoid stuck processing
 package pro.respawn.flowmvi.decorators
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> intentTimeoutDecorator(
     timeout: Duration,
     name: String? = "IntentTimeout",
@@ -522,6 +532,7 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> intentTimeoutDecorator(
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.timeoutIntents(
     timeout: Duration,
     name: String? = "IntentTimeout",
@@ -537,6 +548,7 @@ Retries the entire plugin chain for intents/actions based on a strategy and sele
 package pro.respawn.flowmvi.decorators
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecorator(
     strategy: RetryStrategy,
     name: String? = null,
@@ -544,6 +556,7 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecor
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecorator(
     strategy: RetryStrategy,
     name: String? = null,
@@ -551,6 +564,7 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecor
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.retryIntents(
     strategy: RetryStrategy = RetryStrategy.Default,
     name: String? = null,
@@ -558,6 +572,7 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I
 ): Unit
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.retryActions(
     strategy: RetryStrategy = RetryStrategy.Default,
     name: String? = null,
@@ -573,18 +588,21 @@ Collects and reports metrics snapshots. Use for performance/usage instrumentatio
 package pro.respawn.flowmvi.metrics.dsl
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> metricsDecorator(
     metrics: DefaultMetrics<S, I, A>,
     name: String? = "MetricsDecorator"
 ): PluginDecorator<S, I, A>
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.collectMetrics(
     metrics: DefaultMetrics<S, I, A>,
     name: String? = "MetricsDecorator"
 ): Metrics
 
 @FlowMVIDSL
+@ExperimentalFlowMVIAPI
 public fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.collectMetrics(
     reportingScope: CoroutineScope,
     offloadContext: CoroutineContext = Dispatchers.Default,

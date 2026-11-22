@@ -72,29 +72,31 @@ public open class StorePluginBuilder<S : MVIState, I : MVIIntent, A : MVIAction>
 
 ## Decorator callbacks and types
 
-Decorator callbacks control whether the wrapped chain proceeds.
+Decorators wrap plugins and can **short-circuit the chain** if they do not call child callbacks.
 
 ```kotlin
 public typealias DecorateValue<S, I, A, V> = (
-    suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>, it: V) -> V?
+    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, it: V) -> V?
 )
 
-public typealias DecorateValueNonSuspend<S, I, A, V> = (chain: DecoratorChain<S, I, A>, it: V) -> V?
+public typealias DecorateValueNonSuspend<S, I, A, V> = (
+    child: StorePlugin<S, I, A>, it: V
+) -> V?
 
 public typealias DecorateState<S, I, A> = (
-    suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>, old: S, new: S) -> S?
+    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, old: S, new: S) -> S?
 )
 
 public typealias Decorate<S, I, A> = (
-    suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>) -> Unit
+    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>) -> Unit
 )
 
 public typealias DecorateArg<S, I, A, V> = (
-    suspend PipelineContext<S, I, A>.(chain: DecoratorChain<S, I, A>, it: V) -> Unit
+    suspend PipelineContext<S, I, A>.(child: StorePlugin<S, I, A>, it: V) -> Unit
 )
 
 public typealias DecorateShutdown<S, I, A, V> = (
-    ShutdownContext<S, I, A>.(chain: DecoratorChain<S, I, A>, e: V) -> Unit
+    ShutdownContext<S, I, A>.(child: StorePlugin<S, I, A>, e: V) -> Unit
 )
 ```
 
@@ -121,18 +123,38 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> {
 ### Decorator semantics (short)
 
 - Decorators wrap a plugin (or the whole store as a composite plugin).
-- A decorator callback that omits its matching `chain.onX(...)` call stops the wrapped chain.
+- If you do **not** call `child.onX(...)` inside the decorator, the chain ends there.
 - Decorators are installed **after** plugins and wrap all previously installed plugins.
 - Return values are **final** unless wrapped by another decorator.
 
 ### Decorator example (callback forwarding)
 
-Forward the callback to the wrapped plugin with `chain.onIntent(intent)` when the decorator should continue the chain.
+This pattern is required: you **must** forward to `child.run { onIntent(...) }` (or the appropriate callback), otherwise the chain stops.
 
 ```kotlin
-val forwardingDecorator = decorator<State, Intent, Action> {
-    onIntent { chain, intent ->
-        chain.onIntent(intent)
+@FlowMVIDSL
+@ExperimentalFlowMVIAPI
+fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
+    timeout: Duration,
+    name: String? = "DebounceIntents",
+): PluginDecorator<S, I, A> = decorator {
+    this.name = name
+    val handle = JobHandle()
+
+    onIntent { child, intent ->
+        handle.job?.cancelAndJoin()
+        val job = launch {
+            delay(timeout)
+            child.run { onIntent(intent) }
+        }
+        handle.set(job)
+        null
+    }
+
+    onStop { child, e ->
+        handle.set(null)
+        child.run { onStop(e) }
     }
 }
 ```
+

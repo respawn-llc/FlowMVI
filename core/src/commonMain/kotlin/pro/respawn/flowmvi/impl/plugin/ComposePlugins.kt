@@ -32,7 +32,8 @@ internal fun <S : MVIState, I : MVIIntent, A : MVIAction> List<PluginInstance<S,
         ctx@{ initial: I -> fold(initial) { next -> invoke(this@ctx, next) } }
     },
     onIntentEnqueue = compose(PluginInstance<S, I, A>::onIntentEnqueue) {
-        { initial: I ->
+        {
+                initial: I ->
             fold(initial) { next -> invoke(next) }
         }
     },
@@ -40,7 +41,8 @@ internal fun <S : MVIState, I : MVIIntent, A : MVIAction> List<PluginInstance<S,
         ctx@{ initial: A -> fold(initial) { next -> invoke(this@ctx, next) } }
     },
     onActionDispatch = compose(PluginInstance<S, I, A>::onActionDispatch) {
-        { initial: A ->
+        {
+                initial: A ->
             fold(initial) { next -> invoke(next) }
         }
     },
@@ -61,7 +63,6 @@ internal fun <
     I : MVIIntent,
     A : MVIAction
     > StorePlugin<S, I, A>.asInstance() = typed<PluginInstance<S, I, A>>() ?: PluginInstance(
-    name = name,
     onState = { old: S, new: S -> onState(old, new) },
     onIntentEnqueue = { intent: I -> onIntentEnqueue(intent) },
     onIntent = { intent: I -> onIntent(intent) },

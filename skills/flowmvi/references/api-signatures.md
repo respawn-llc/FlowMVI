@@ -79,15 +79,19 @@ public class StoreBuilder<S : MVIState, I : MVIIntent, A : MVIAction> internal c
     public fun LazyPlugin<S, I, A>.install(): Unit
 
     @FlowMVIDSL
+    @ExperimentalFlowMVIAPI
     public infix fun install(decorators: Iterable<PluginDecorator<S, I, A>>): Unit
 
     @FlowMVIDSL
+    @ExperimentalFlowMVIAPI
     public fun install(decorator: PluginDecorator<S, I, A>, vararg other: PluginDecorator<S, I, A>)
 
     @FlowMVIDSL
+    @ExperimentalFlowMVIAPI
     public inline infix fun decorate(block: DecoratorBuilder<S, I, A>.() -> Unit): Unit
 
     @FlowMVIDSL
+    @ExperimentalFlowMVIAPI
     public fun PluginDecorator<S, I, A>.install(): Unit
 }
 

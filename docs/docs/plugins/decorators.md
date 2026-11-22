@@ -5,6 +5,14 @@ sidebar_label: Decorators
 
 # Decorators = Plugins for Plugins
 
+:::warning[Experimental Feature]
+
+Decorators are currently experimental because their DSL is limited by Kotlin features and they
+are less safe/performant to use. There will be a breaking change with them within a few updates.
+They are also not tested enough as of 3.2 releases.
+
+:::
+
 Decorators are very similar to plugins, so the way they work may seem confusing at first.
 
 In short,
@@ -34,7 +42,7 @@ val decorator = decorator<State, Intent, Action> {
     name = "FilterInvalidDecorator"
     onIntent { chain, intent ->
         if (intent is InvalidIntent) return@onIntent null
-        chain.onIntent(intent)
+        chain.run { onIntent(intent) } // returns the result of the chain
     }
 }
 
@@ -44,6 +52,14 @@ val decoratedPlugin = decorator decorates plugin
 As you can see, there is an additional parameter `chain` in the decorator callback. It is the plugin that we
 wrap. Decorators can be applied to any plugin, so you can't know which exact plugin you are wrapping except by querying
 its `name`.
+
+:::info
+
+The `chain` parameter is temporary and will become a receiver with a future Kotlin release. Right now,
+calling the chain is awkward because you have to always wrap it in a `run` block to bring the `PipelineContext` into
+the scope.
+
+:::
 
 :::warning
 
@@ -144,6 +160,7 @@ Debounces incoming intents, mirroring the semantics of `kotlinx.coroutines.flow.
 Install with `debounceIntents(timeout)` or `debounceIntents(name, timeoutSelector)`:
 
 ```kotlin
+@OptIn(ExperimentalFlowMVIAPI::class)
 val store = store(initial = State()) {
     debounceIntents(300.milliseconds)
 }
@@ -152,6 +169,7 @@ val store = store(initial = State()) {
 Dynamic timeouts are useful when only some intents should be debounced:
 
 ```kotlin
+@OptIn(ExperimentalFlowMVIAPI::class)
 val store = store(initial = State()) {
     debounceIntents { intent ->
         when (intent) {

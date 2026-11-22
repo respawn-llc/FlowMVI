@@ -48,7 +48,7 @@ class WrapNotNullTest : FreeSpec({
             }
             val decorator = testDecorator {
                 onStart { child ->
-                    child.onStart()
+                    child.run { onStart() }
                     wrapperInvocations++
                 }
             }
