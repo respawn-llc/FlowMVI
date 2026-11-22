@@ -15,8 +15,6 @@ atomicfu {
     jvmVariant = "VH"
 }
 
-kotlin.compilerOptions.freeCompilerArgs.add("-Xdont-warn-on-error-suppression")
-
 kotlin.android {
     namespace = Config.namespace
 }

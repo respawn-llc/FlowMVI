@@ -50,6 +50,7 @@ object Config {
         "kotlin.contracts.ExperimentalContracts",
     )
     val compilerArgs = listOf(
+        "-Xdont-warn-on-error-suppression",
         "-Xexpect-actual-classes",
         "-Xconsistent-data-class-copy-visibility",
         "-Xwarning-level=NOTHING_TO_INLINE:disabled",
