@@ -133,7 +133,6 @@ This pattern is required: you **must** forward to `child.run { onIntent(...) }` 
 
 ```kotlin
 @FlowMVIDSL
-@ExperimentalFlowMVIAPI
 fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator(
     timeout: Duration,
     name: String? = "DebounceIntents",

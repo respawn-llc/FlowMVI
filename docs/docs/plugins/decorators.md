@@ -5,14 +5,6 @@ sidebar_label: Decorators
 
 # Decorators = Plugins for Plugins
 
-:::warning[Experimental Feature]
-
-Decorators are currently experimental because their DSL is limited by Kotlin features and they
-are less safe/performant to use. There will be a breaking change with them within a few updates.
-They are also not tested enough as of 3.2 releases.
-
-:::
-
 Decorators are very similar to plugins, so the way they work may seem confusing at first.
 
 In short,
@@ -160,7 +152,6 @@ Debounces incoming intents, mirroring the semantics of `kotlinx.coroutines.flow.
 Install with `debounceIntents(timeout)` or `debounceIntents(name, timeoutSelector)`:
 
 ```kotlin
-@OptIn(ExperimentalFlowMVIAPI::class)
 val store = store(initial = State()) {
     debounceIntents(300.milliseconds)
 }
@@ -169,7 +160,6 @@ val store = store(initial = State()) {
 Dynamic timeouts are useful when only some intents should be debounced:
 
 ```kotlin
-@OptIn(ExperimentalFlowMVIAPI::class)
 val store = store(initial = State()) {
     debounceIntents { intent ->
         when (intent) {
