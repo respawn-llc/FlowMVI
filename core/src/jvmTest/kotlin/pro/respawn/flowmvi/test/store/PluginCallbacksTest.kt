@@ -13,6 +13,7 @@ import pro.respawn.flowmvi.util.idle
 import pro.respawn.flowmvi.util.testStore
 
 @OptIn(DelicateStoreApi::class)
+@Suppress("CAN_BE_VAL")
 class PluginCallbacksTest : FreeSpec({
     configure()
 

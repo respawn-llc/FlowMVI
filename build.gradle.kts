@@ -38,7 +38,7 @@ subprojects {
     plugins.withType<ComposeCompilerGradleSubplugin>().configureEach {
         the<ComposeCompilerGradlePluginExtension>().apply {
             stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("stability_definitions.txt"))
-            if (properties["enableComposeCompilerReports"] == "true") {
+            if (providers.gradleProperty("enableComposeCompilerReports").orNull == "true") {
                 val metricsDir = layout.buildDirectory.dir("compose_metrics")
                 metricsDestination = metricsDir
                 reportsDestination = metricsDir
@@ -47,7 +47,7 @@ subprojects {
     }
     plugins.withType<MavenPublishBasePlugin> {
         the<MavenPublishBaseExtension>().apply {
-            val isReleaseBuild = properties["release"]?.toString().toBoolean()
+            val isReleaseBuild = providers.gradleProperty("release").orNull.toBoolean()
             publishToMavenCentral(false)
             checksums(Checksum.MD5, Checksum.SHA1, Checksum.SHA256, Checksum.SHA512)
             excludeSignatureChecksums(false)

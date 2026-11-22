@@ -14,6 +14,7 @@ import pro.respawn.flowmvi.util.testStore
 //   consider invoking onUndelivered intent if plugins returned non-null intent
 
 @OptIn(DelicateStoreApi::class)
+@Suppress("CAN_BE_VAL")
 class UndeliveredIntentTest : FreeSpec({
     configure()
     "Given a store that processes intents slowly" - {

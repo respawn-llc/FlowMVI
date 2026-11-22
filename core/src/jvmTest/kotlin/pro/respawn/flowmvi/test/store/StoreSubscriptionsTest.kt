@@ -10,6 +10,7 @@ import pro.respawn.flowmvi.util.idle
 import pro.respawn.flowmvi.util.testStore
 import pro.respawn.flowmvi.util.testTimeTravel
 
+@Suppress("CAN_BE_VAL")
 class StoreSubscriptionsTest : FreeSpec({
     configure()
 

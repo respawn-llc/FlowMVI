@@ -23,7 +23,7 @@ val BuildConfig = """
     }
 """.trimIndent()
 
-val generateBuildConfig by tasks.registering(Sync::class) {
+val generateBuildConfig = tasks.register<Sync>("generateBuildConfig") {
     from(resources.text.fromString(BuildConfig)) {
         rename { "BuildFlags.kt" }
         into(Config.Sample.namespace.replace(".", "/"))
@@ -73,9 +73,6 @@ kotlin {
     // }.toList()
 
     sourceSets {
-        val desktopMain by getting
-        val wasmJsMain by getting
-
         all {
             languageSettings {
                 progressiveMode = true
@@ -110,7 +107,7 @@ kotlin {
                 implementation(projects.essenty.essentyCompose)
                 implementation(projects.essenty)
                 implementation(projects.compose)
-                implementation(projects.savedstate)
+                api(projects.savedstate)
                 implementation(projects.metrics)
             }
         }
@@ -120,13 +117,17 @@ kotlin {
         nativeMain.dependencies {
             implementation(projects.debugger.debuggerPlugin)
         }
-        desktopMain.dependencies {
-            implementation(projects.debugger.debuggerPlugin)
-            implementation(libs.kotlin.coroutines.swing)
-            implementation(compose.desktop.currentOs)
+        named("desktopMain") {
+            dependencies {
+                implementation(projects.debugger.debuggerPlugin)
+                implementation(libs.kotlin.coroutines.swing)
+                implementation(compose.desktop.currentOs)
+            }
         }
-        wasmJsMain.dependencies {
-            implementation(libs.essenty.statekeeper)
+        named("wasmJsMain") {
+            dependencies {
+                implementation(libs.essenty.statekeeper)
+            }
         }
     } // sets
 }

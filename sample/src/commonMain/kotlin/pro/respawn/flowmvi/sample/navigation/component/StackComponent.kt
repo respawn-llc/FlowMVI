@@ -30,7 +30,9 @@ open class StackComponent(
     context: ComponentContext,
 ) : Navigator {
 
-    val results by context.retained { MutableStateFlow<Set<NavResult<*>>>(emptySet()) }
+    val results by context.retained(key = "navigation-results") {
+        MutableStateFlow<Set<NavResult<*>>>(emptySet())
+    }
     val stackNav = StackNavigation<Destination>()
     val stack = context.childStack(
         source = stackNav,

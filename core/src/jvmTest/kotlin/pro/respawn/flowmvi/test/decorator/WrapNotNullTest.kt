@@ -12,6 +12,7 @@ import pro.respawn.flowmvi.util.TestState
 import pro.respawn.flowmvi.util.configure
 import pro.respawn.flowmvi.util.testDecorator
 
+@Suppress("CAN_BE_VAL")
 class WrapNotNullTest : FreeSpec({
     configure()
 

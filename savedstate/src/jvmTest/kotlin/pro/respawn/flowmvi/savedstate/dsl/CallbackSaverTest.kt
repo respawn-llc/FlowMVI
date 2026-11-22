@@ -3,6 +3,7 @@ package pro.respawn.flowmvi.savedstate.dsl
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
 
+@Suppress("CAN_BE_VAL")
 class CallbackSaverTest : FreeSpec({
 
     "Given a CallbackSaver" - {

@@ -80,6 +80,7 @@ internal suspend inline fun TerminalScope.testCollector(
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal suspend inline fun TerminalScope.testCollectorWithTime(
     windowSeconds: Int = 60,
     emaAlpha: Double = 0.5,
@@ -117,7 +118,7 @@ internal fun Spec.configure() {
     this.coroutineDebugProbes = false
 }
 
-@OptIn(ExperimentalFlowMVIAPI::class)
+@OptIn(ExperimentalFlowMVIAPI::class, ExperimentalCoroutinesApi::class)
 internal suspend inline fun TerminalScope.testCollectorAsStore(
     windowSeconds: Int = 60,
     emaAlpha: Double = 0.5,

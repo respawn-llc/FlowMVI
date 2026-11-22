@@ -8,7 +8,7 @@ internal fun Any.prettyPrintToString() = toString().trimIndent().let { toString 
     fun padding() = "".padStart(indentLevel * indentWidth)
     buildString {
         var ignoreSpace = false
-        toString.onEach { char ->
+        val _ = toString.onEach { char ->
             when (char) {
                 '(', '[', '{' -> {
                     indentLevel++

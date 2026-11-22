@@ -17,6 +17,7 @@ import pro.respawn.flowmvi.util.configure
 import pro.respawn.flowmvi.util.testDecorator
 import pro.respawn.flowmvi.util.testTimeTravel
 
+@Suppress("CAN_BE_VAL")
 class StoreDecoratorTest : FreeSpec({
     configure()
 

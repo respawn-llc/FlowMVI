@@ -8,6 +8,7 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
+@Suppress("CAN_BE_VAL")
 class ActionMetricsCollectorTest : FreeSpec({
 
     configure()

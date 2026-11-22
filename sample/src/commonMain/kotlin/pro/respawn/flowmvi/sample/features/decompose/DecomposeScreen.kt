@@ -123,7 +123,7 @@ fun DecomposeScreen(
     // this is a little bit of a hack to force the component hierarchy to behave as if it's the root hierarchy
     val koin = currentKoinScope()
     val component = remember(parent) {
-        parent.instanceKeeper.getOrCreateSimple {
+        parent.instanceKeeper.getOrCreateSimple(key = "decompose-pages-component") {
             PagesComponent(parent.childContext("Pages"), koin::get)
         }
     }

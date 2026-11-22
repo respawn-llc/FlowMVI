@@ -10,6 +10,7 @@ import pro.respawn.flowmvi.util.TestIntent
 import pro.respawn.flowmvi.util.TestState
 import kotlin.IllegalStateException
 
+@Suppress("CAN_BE_VAL")
 class InitPluginsTests : FreeSpec({
     "Given disallow restart plugin" - {
         disallowRestartPlugin<TestState, TestIntent, TestAction>().test(TestState.Some) {

@@ -6,6 +6,7 @@ import pro.respawn.flowmvi.dsl.plugin
 import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
+@Suppress("CAN_BE_VAL")
 class ExceptionMetricsCollectorTest : FreeSpec({
 
     configure()

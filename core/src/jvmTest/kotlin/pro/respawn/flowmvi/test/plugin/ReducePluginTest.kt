@@ -9,6 +9,7 @@ import pro.respawn.flowmvi.util.TestAction
 import pro.respawn.flowmvi.util.TestIntent
 import pro.respawn.flowmvi.util.TestState
 
+@Suppress("CAN_BE_VAL")
 class ReducePluginTest : FreeSpec({
     "Given consume intents plugin" - {
         val plugin = consumeIntentsPlugin<TestState, TestIntent, TestAction>()

@@ -2,8 +2,6 @@
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -44,7 +42,7 @@ fun Project.configureMultiplatform(
 
     if (windows) mingwX64()
 
-    if (js) js(IR) {
+    if (js) js {
         browser()
         nodejs()
         binaries.library()
@@ -69,7 +67,7 @@ fun Project.configureMultiplatform(
     }
 
     if (wasmWasi) wasmWasi {
-        nodejs()
+        wasmtime()
     }
 
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
@@ -120,7 +118,7 @@ fun Project.configureMultiplatform(
 
     sourceSets.apply {
         if (jvm) {
-            val jvmTest by getting {
+            named("jvmTest") {
                 dependencies {
                     implementation(libs.requireLib("kotest-junit"))
                 }

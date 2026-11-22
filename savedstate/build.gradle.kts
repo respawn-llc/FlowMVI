@@ -49,5 +49,6 @@ kotlin {
 }
 
 kotlin.android {
+    compilerOptions.freeCompilerArgs.add("-Xdont-warn-on-error-suppression")
     namespace = "${Config.namespace}.savedstate"
 }
