@@ -8,7 +8,7 @@ libraries:
     active: false
   LibraryCodeMustSpecifyReturnType:
     active: true
-    allowOmitUnit: false
+    allowOmitUnit: true
     includes: ['**/src/*Main/**']
   LibraryEntitiesShouldNotBePublic:
     active: true

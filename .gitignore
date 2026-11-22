@@ -184,4 +184,5 @@ docs/javadocs/**
 /.idea/artifacts/
 /.idea/deviceManager.xml
 /.kent/plans/
+/.kent/config.local.toml
 /.idea/doNotAskNotifications.xml
