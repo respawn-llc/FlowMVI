@@ -88,8 +88,8 @@ intellijPlatform {
 }
 
 java {
-    // Compile with the build JDK, but keep the plugin runnable on Java 21 IDEs.
-    toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.current().majorVersion.toInt()))
+    // Use the Gradle JVM for compilation rather than the target IDE's Java version.
+    toolchain.languageVersion.unsetConvention()
 }
 
 tasks {
