@@ -1,8 +1,8 @@
 [versions]
 activity = "1.13.0"
-compose = "1.13.0-beta02"
+compose = "1.13.0-rc01"
 composeDetektPlugin = "2.2.0"
-composeMaterial3 = "1.13.0-beta02"
+composeMaterial3 = "1.13.0-rc01"
 coroutines = "1.11.0"
 datetime = "0.8.0-0.6.x-compat"
 detekt = "2.0.0-alpha.6"
@@ -10,7 +10,7 @@ dokka = "2.3.0"
 essenty = "2.7.1"
 fragment = "1.9.1"
 # @pin
-gradleAndroid = "9.5.1"
+gradleAndroid = "9.5.2"
 intellij-ide-plugin = "2.20.1"
 # @pin IntelliJ IDEA 2026.2+ uses Java 25; the debugger plugin still supports Java 21 IDEs.
 intellij-idea = "2026.1.5.1"
@@ -20,7 +20,7 @@ junit = "4.13.2"
 kotest = "6.2.7"
 # @pin
 kotlin = "2.5.0-RC"
-kotlin-benchmark = "0.5.0"
+kotlin-benchmark = "0.6.0-rc"
 kotlin-browser = "0.5.0"
 kotlin-collections = "0.5.2"
 kotlin-io = "0.9.3"
