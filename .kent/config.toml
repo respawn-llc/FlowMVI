@@ -1,5 +1,5 @@
 [skills]
-flowmvi = true
+flowmvi = false
 
 [worktrees]
 setup_script = "scripts/setup-worktree.sh"
