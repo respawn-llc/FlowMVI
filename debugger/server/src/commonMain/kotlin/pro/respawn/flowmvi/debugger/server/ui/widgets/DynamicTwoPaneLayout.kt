@@ -31,9 +31,9 @@ import pro.respawn.kmmutils.common.takeIfNotZero
 @Composable
 internal fun DynamicTwoPaneLayout(
     secondPaneVisible: Boolean,
+    firstPaneContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     widthRange: ClosedFloatingPointRange<Float> = 0.25f..0.75f,
-    firstPaneContent: @Composable () -> Unit,
     secondaryPaneContent: @Composable () -> Unit
 ) {
     var contentWidth by remember { mutableStateOf(0f) }

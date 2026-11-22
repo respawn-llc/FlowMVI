@@ -33,7 +33,7 @@ class StorePluginTest : FreeSpec({
             // I suspect that's because store uses the parent scope to launch itself and throws exceptions from there,
             // not from the actual test case
             enabled = false,
-            threads = 1, severity = TestCaseSeverityLevel.TRIVIAL
+            severity = TestCaseSeverityLevel.TRIVIAL
         ) - {
             shouldThrowExactly<IllegalArgumentException> {
                 "then recover does not loop into itself" {

@@ -1,0 +1,16 @@
+config:
+  validation: true
+  warningsAsErrors: true
+
+libraries:
+  active: true
+  ForbiddenPublicDataClass:
+    active: false
+  LibraryCodeMustSpecifyReturnType:
+    active: true
+    allowOmitUnit: true
+    includes: ['**/src/*Main/**']
+  LibraryEntitiesShouldNotBePublic:
+    active: true
+    # These packages are implementation details; FlowMVI's public API is intentionally public.
+    includes: ['**/src/*Main/**/internal/**']

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.maven.publish)
     dokkaDocumentation
 }
-android {
+kotlin.android {
     namespace = "${Config.namespace}.test"
 }
 dependencies {

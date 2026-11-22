@@ -2,7 +2,6 @@
 
 package pro.respawn.flowmvi.decorator
 
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
 import pro.respawn.flowmvi.api.MVIState
@@ -39,7 +38,6 @@ ShutdownContext<S, I, A>.(child: StorePlugin<S, I, A>, e: V) -> Unit
  *
  * Consult the [PluginDecorator] and [DecoratorBuilder] docs for more info.
  */
-@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> decorator(
     block: DecoratorBuilder<S, I, A>.() -> Unit
 ): PluginDecorator<S, I, A> = DecoratorBuilder<S, I, A>().apply(block).build()
@@ -77,8 +75,7 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         ctx@{ wrap(this, this@decorate, it) }
     },
     onIntentEnqueue = wrapNotNull(onIntentEnqueue, decorator.onIntentEnqueue) { wrap ->
-        {
-                intent ->
+        { intent ->
             wrap(this@decorate, intent)
         }
     },
@@ -86,8 +83,7 @@ internal infix fun <S : MVIState, I : MVIIntent, A : MVIAction> PluginInstance<S
         ctx@{ wrap(this, this@decorate, it) }
     },
     onActionDispatch = wrapNotNull(onActionDispatch, decorator.onActionDispatch) { wrap ->
-        {
-                action ->
+        { action ->
             wrap(this@decorate, action)
         }
     },

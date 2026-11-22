@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     id(libs.plugins.kotlin.multiplatform.id)
-    id(libs.plugins.androidLibrary.id)
+    id(libs.plugins.androidMultiplatformLibrary.id)
     alias(libs.plugins.atomicfu)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.kotlin.serialization)
@@ -28,8 +28,7 @@ kotlin {
     }
 }
 
-android {
-    configureAndroidLibrary(this)
+kotlin.android {
     namespace = "${Config.namespace}.metrics"
 }
 

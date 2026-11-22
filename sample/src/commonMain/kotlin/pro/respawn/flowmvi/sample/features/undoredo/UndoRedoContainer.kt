@@ -19,6 +19,7 @@ import pro.respawn.flowmvi.sample.features.undoredo.UndoRedoIntent.ChangedInput
 import pro.respawn.flowmvi.sample.features.undoredo.UndoRedoIntent.ClickedRedo
 import pro.respawn.flowmvi.sample.features.undoredo.UndoRedoIntent.ClickedUndo
 import pro.respawn.kmmutils.inputforms.dsl.input
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class UndoRedoContainer(
     configuration: ConfigurationFactory,
@@ -34,11 +35,11 @@ internal class UndoRedoContainer(
         whileSubscribed {
             coroutineScope {
                 lastInput.map { old ->
-                    delay(DebounceDuration)
+                    delay(DebounceDuration.milliseconds)
                     withState {
                         val new = input
                         if (new.value == old) return@withState
-                        undoRedo(
+                        val _ = undoRedo(
                             doImmediately = false,
                             redo = { updateStateImmediate { copy(input = new) } },
                             undo = { updateStateImmediate { copy(input = old.input()) } },

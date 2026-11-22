@@ -34,7 +34,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,7 +101,6 @@ fun RTextInput(
     textStyle: TextStyle = LocalTextStyle.current,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     keyboardActions: KeyboardActions = KeyboardActions.default(),
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -134,7 +132,6 @@ fun RTextInput(
         textStyle = textStyle,
         maxLines = maxLines,
         minLines = minLines,
-        visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         leadingIcon = leadingIcon,
@@ -273,7 +270,6 @@ fun OutlinedTextFieldContent(
     textStyle: TextStyle = LocalTextStyle.current,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     keyboardActions: KeyboardActions = KeyboardActions.default(),
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -289,7 +285,6 @@ fun OutlinedTextFieldContent(
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         textStyle = textStyle,
-        visualTransformation = visualTransformation,
         label = { LabelWithCounter(lengthRange, label, input.value.length, labelStyle, isFocused) },
         placeholder = placeholder?.let { value ->
             {

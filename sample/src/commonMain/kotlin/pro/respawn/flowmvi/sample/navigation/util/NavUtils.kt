@@ -10,9 +10,10 @@ internal infix fun Destination.duplicateOf(
     other: Destination
 ) = if (singleTop) this::class == other::class else this == other
 
-internal inline fun <reified T> InstanceKeeperOwner.retained(
+internal inline fun <T> InstanceKeeperOwner.retained(
+    key: String,
     crossinline block: () -> T
-) = fastLazy { instanceKeeper.getOrCreateSimple<T> { block() } }
+) = fastLazy { instanceKeeper.getOrCreateSimple(key = key) { block() } }
 
 private val humps by fastLazy { "(?<=.)(?=\\p{Upper})".toRegex() }
 

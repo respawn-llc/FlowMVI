@@ -10,6 +10,7 @@ import pro.respawn.flowmvi.logging.StoreLogLevel
 import pro.respawn.flowmvi.metrics.api.MetricsSnapshot
 import pro.respawn.flowmvi.metrics.api.Sink
 
+@Suppress("CAN_BE_VAL")
 class DefaultSinksTest : FreeSpec({
 
     "MappingSink maps values before delegating" {

@@ -131,7 +131,8 @@ For example, the library's `reduce` plugin **cannot** be installed multiple time
 ### onState
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onState(old: S, new: S): S? = new
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onState(old: S, new: S): S? = new
 ```
 
 A callback to be invoked each time `updateState` is called.
@@ -153,7 +154,8 @@ or when `state` is obtained directly.
 ### onIntent
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onIntent(intent: I): I? = intent
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onIntent(intent: I): I? = intent
 ```
 
 A callback that is invoked each time an intent is received **and then begun** to be processed.
@@ -185,7 +187,8 @@ and will be thrown to the caller of `intent/emit`. Keep it fast and exception-sa
 ### onAction
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onAction(action: A): A? = action
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onAction(action: A): A? = action
 ```
 
 A callback that is invoked each time an `MVIAction` has been sent.
@@ -224,7 +227,8 @@ and will escape to the caller that triggered delivery. Make it non-throwing.
 ### onException
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onException(e: Exception): Exception? = e
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onException(e: Exception): Exception? = e
 ```
 
 A callback that is invoked when Store catches an exception. It is invoked when either a coroutine launched inside the
@@ -248,7 +252,8 @@ store throws, or when an exception occurs in any other plugin.
 ### onStart
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onStart(): Unit = Unit
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onStart(): Unit = Unit
 ```
 
 A callback that is invoked **each time** `Store.start` is called.
@@ -260,7 +265,8 @@ A callback that is invoked **each time** `Store.start` is called.
 ### onSubscribe
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onSubscribe(subscriberCount: Int): Unit = Unit
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onSubscribe(newSubscriberCount: Int): Unit = Unit
 ```
 
 A callback to be executed **each time** `Store.subscribe` is called.
@@ -280,7 +286,8 @@ A callback to be executed **each time** `Store.subscribe` is called.
 ### onUnsubscribe
 
 ```kotlin
-suspend fun PipelineContext<S, I, A>.onUnsubscribe(subscriberCount: Int): Unit = Unit
+context(ctx: PipelineContext<S, I, A>)
+suspend fun onUnsubscribe(newSubscriberCount: Int): Unit = Unit
 ```
 
 A callback to be executed when the subscriber cancels its subscription job (unsubscribes).
@@ -297,7 +304,8 @@ A callback to be executed when the subscriber cancels its subscription job (unsu
 ### onStop
 
 ```kotlin
-fun ShutdownContext<S, I, A>.onStop(e: Exception?): Unit = Unit
+context(ctx: ShutdownContext<S, I, A>)
+fun onStop(e: Exception?): Unit = Unit
 ```
 
 Invoked when the store is closed.
@@ -314,7 +322,8 @@ Invoked when the store is closed.
 ### onUndeliveredIntent
 
 ```kotlin
-fun ShutdownContext<S, I, A>.onUndeliveredIntent(intent: I): Unit = Unit
+context(ctx: ShutdownContext<S, I, A>)
+fun onUndeliveredIntent(intent: I): Unit = Unit
 ```
 
 Called when an intent is not delivered to the store.
@@ -337,7 +346,8 @@ The `onException` block will **not** handle exceptions in this function.
 ### onUndeliveredAction
 
 ```kotlin
-fun ShutdownContext<S, I, A>.onUndeliveredAction(action: A): Unit = Unit
+context(ctx: ShutdownContext<S, I, A>)
+fun onUndeliveredAction(action: A): Unit = Unit
 ```
 Called when an action is not delivered to the store.
 

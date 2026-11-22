@@ -5,7 +5,6 @@ package pro.respawn.flowmvi.decorators
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pro.respawn.flowmvi.annotation.ExperimentalFlowMVIAPI
 import pro.respawn.flowmvi.api.DelicateStoreApi
 import pro.respawn.flowmvi.api.MVIAction
 import pro.respawn.flowmvi.api.MVIIntent
@@ -37,6 +36,7 @@ public data class RetryStrategy private constructor(
     val base: Double,
     val delayInitially: Boolean,
 ) {
+
     internal fun shouldRetry(attempt: Int) = attempt <= retries
     internal fun delay(attempt: Int) = when {
         attempt == FirstAttempt && !delayInitially -> Duration.ZERO
@@ -57,6 +57,7 @@ public data class RetryStrategy private constructor(
      *  Defaults
      */
     public companion object {
+
         @PublishedApi
         internal const val FirstAttempt: Int = 1
 
@@ -121,7 +122,6 @@ public data class RetryStrategy private constructor(
  *
  * @see retryActionsDecorator
  */
-@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecorator(
     strategy: RetryStrategy,
     name: String? = null,
@@ -129,11 +129,9 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecor
 ): PluginDecorator<S, I, A> = decorator {
     this.name = name
     onIntent { chain, intent ->
-        with(chain) {
-            retryRecursive(strategy, { selector(intent, it) }) { i ->
-                if (i > RetryStrategy.FirstAttempt) config.logger.warn { "Retry attempt #$i for $intent" }
-                onIntent(intent)
-            }
+        retryRecursive(strategy, { selector(intent, it) }) { i ->
+            if (i > RetryStrategy.FirstAttempt) config.logger.warn { "Retry attempt #$i for $intent" }
+            chain.onIntent(intent)
         }
     }
 }
@@ -148,7 +146,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecor
  *
  * @see retryIntentsDecorator
  */
-@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecorator(
     strategy: RetryStrategy,
     name: String? = null,
@@ -174,7 +171,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryActionsDecor
  * @see retryActions
  */
 @IgnorableReturnValue
-@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.retryIntents(
     strategy: RetryStrategy = RetryStrategy.Default,
     name: String? = null,
@@ -190,7 +186,6 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I
  * @see retryIntents
  */
 @IgnorableReturnValue
-@ExperimentalFlowMVIAPI
 public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> StoreBuilder<S, I, A>.retryActions(
     strategy: RetryStrategy = RetryStrategy.Default,
     name: String? = null,

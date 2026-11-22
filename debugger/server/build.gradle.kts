@@ -8,7 +8,7 @@ plugins {
 val parentNamespace = namespaceByPath()
 
 // must be earlier than other config or build tasks
-val generateBuildConfig by tasks.registering(Sync::class) {
+val generateBuildConfig = tasks.register<Sync>("generateBuildConfig") {
     from(
         resources.text.fromString(
             """

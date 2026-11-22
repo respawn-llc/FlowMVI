@@ -1,38 +1,36 @@
 [versions]
 activity = "1.13.0"
-# @pin
-#noinspection GradleDependency - must match jb-lifecycle
-androidx-lifecycle = "2.9.2"
-compose = "1.11.0"
-composeDetektPlugin = "1.4.0"
-composeMaterial3 = "1.9.0"
-core-ktx = "1.13.1"
+compose = "1.13.0-rc01"
+composeDetektPlugin = "2.2.0"
+composeMaterial3 = "1.13.0-rc01"
 coroutines = "1.11.0"
 datetime = "0.8.0-0.6.x-compat"
-detekt = "1.23.8"
-dokka = "2.2.0"
-essenty = "2.5.0"
-fragment = "1.8.9"
-# @pin  TODO: need to migrate to  9.0 beta
-gradleAndroid = "8.13.1"
-intellij-ide-plugin = "2.16.0"
-intellij-idea = "2026.1"
+detekt = "2.0.0-alpha.6"
+dokka = "2.3.0"
+essenty = "2.7.1"
+fragment = "1.9.1"
+# @pin
+gradleAndroid = "9.5.2"
+intellij-ide-plugin = "2.20.1"
+# @pin IntelliJ IDEA 2026.2+ uses Java 25; the debugger plugin still supports Java 21 IDEs.
+intellij-idea = "2026.1.5.1"
+intellij-verification-ide = "2026.3"
 jmh = "1.37"
 junit = "4.13.2"
-kotest = "6.1.11"
+kotest = "6.2.7"
 # @pin
-kotlin = "2.4.0-RC"
-kotlin-benchmark = "0.4.17"
+kotlin = "2.5.0-RC"
+kotlin-benchmark = "0.6.0-rc"
 kotlin-browser = "0.5.0"
-kotlin-collections = "0.5.0-beta01"
-kotlin-io = "0.9.0"
-kotlinx-atomicfu = "0.32.1"
-ktor = "3.5.0"
-lifecycle = "2.11.0-beta01"
-maven-publish-plugin = "0.36.0"
-serialization = "1.11.0"
+kotlin-collections = "0.5.2"
+kotlin-io = "0.9.3"
+kotlinx-atomicfu = "0.33.0"
+ktor = "3.6.1"
+lifecycle = "2.11.0"
+maven-publish-plugin = "0.37.0"
+serialization = "1.13.0"
 turbine = "1.2.1"
-versionCatalogUpdatePlugin = "1.1.0"
+versionCatalogUpdatePlugin = "1.1.2"
 
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradleAndroid" }
@@ -55,10 +53,10 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
-detekt-compose = { module = "ru.kode:detekt-rules-compose", version.ref = "composeDetektPlugin" }
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-gradle = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-detekt-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
+detekt-compose = { module = "ru.kode:detekt-rules-compose-detekt2", version.ref = "composeDetektPlugin" }
+detekt-formatting = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+detekt-gradle = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-libraries = { module = "dev.detekt:detekt-rules-libraries", version.ref = "detekt" }
 dokka-android = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
 dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 essenty-instancekeeper = { module = "com.arkivanov.essenty:instance-keeper", version.ref = "essenty" }
@@ -151,11 +149,11 @@ unittest = [
 ]
 
 [plugins]
-androidLibrary = { id = "com.android.library", version.ref = "gradleAndroid" }
+androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "gradleAndroid" }
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlinx-atomicfu" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 intellij-ide = { id = "org.jetbrains.intellij.platform", version.ref = "intellij-ide-plugin" }
 kotest = { id = "io.kotest.multiplatform", version.ref = "kotest" }

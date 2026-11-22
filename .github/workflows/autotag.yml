@@ -13,13 +13,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
           fetch-depth: '0'
 
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@v1
+        uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSOURCE_PAT }} # Use PAT to trigger workflows
           CUSTOM_TAG: ${{ github.event.pull_request.title }}

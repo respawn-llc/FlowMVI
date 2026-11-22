@@ -7,7 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.allopen)
 }
 
-allOpen { // jmh benchmark classes must be open
+allOpen {
+    // jmh benchmark classes must be open
     annotation("org.openjdk.jmh.annotations.State")
 }
 kotlin {
@@ -15,7 +16,6 @@ kotlin {
         ext = this,
         explicitApi = false,
         wasmWasi = false,
-        android = false,
         linux = false,
         iOs = false,
         macOs = false,

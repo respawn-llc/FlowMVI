@@ -113,7 +113,7 @@ Here's what you get:
 * No base classes, complicated abstractions, or factories of factories - write **simple, declarative logic** using a DSL
 * Automatic multiplatform system **lifecycle handling**
 * First class, one-liner **Compose Multiplatform support** with Previews and UI tests.
-* Integrates with [Decompose](https://github.com/arkivanov/Decompose), Koin, Kodein, androidx.navigation, Nav3, and more
+* Integrates with [Decompose](https://github.com/arkivanov/Decompose), Koin, androidx.navigation, Nav3, and more
 * Dedicated **IDE Plugin for debugging and codegen** and app for Windows, Linux, macOS
 * The core **library has no dependencies** - just coroutines
 * Extensively covered by **350+ tests**

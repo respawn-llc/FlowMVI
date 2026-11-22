@@ -15,6 +15,7 @@ import pro.respawn.flowmvi.util.configure
 import pro.respawn.flowmvi.util.testTimeTravel
 
 @OptIn(ExperimentalFlowMVIAPI::class)
+@Suppress("CAN_BE_VAL")
 class ConflateDecoratorTest : FreeSpec({
     configure()
 

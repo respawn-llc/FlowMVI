@@ -30,11 +30,7 @@ import pro.respawn.flowmvi.util.setOnce
  *  the **final** values, i.e, if you return a state, it will be the state that the store will have,
  *  unless this decorator is decorated by another one
  *
- *  ### Warning:
- *  Decorators are experimental and currently are waiting for context parameter support to enable the correct
- *  DSL. The current DSL is temporary, and as such, there WILL be at least one breaking change before these go stable,
- *  it may even be a behavioral one. If you use these, monitor the release notes for changes
- *  in the API and, if possible, stick to built-in decorators.**
+ *  Call the wrapped plugin directly, for example `child.onIntent(intent)`. The callback receiver supplies its context.
  *
  *  Builder methods will throw [IllegalArgumentException] if they are assigned multiple times.
  *  Each plugin can only have **one** block per each type of [StorePlugin] callback.
@@ -67,7 +63,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child's [StorePlugin.onStart] method will **not** be invoked
      * unless you manually call [StorePlugin.onStart] inside this block!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onStart() }`
+     * Forward with `child.onStart()`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -79,7 +75,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The [StorePlugin.onIntentEnqueue] method will **not** be invoked
      * unless you manually call [StorePlugin.onIntentEnqueue] inside this block!
      *
-     * For pre-context parameters version, to correctly call the child method: `child.run { onIntentEnqueue(intent) }`
+     * Forward with `child.onIntentEnqueue(intent)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -91,7 +87,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The [StorePlugin.onIntent] method will **not** be invoked
      * unless you manually call [StorePlugin.onIntent] inside this block!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onIntent(intent) }`
+     * Forward with `child.onIntent(intent)`.
      *
      * The return value of [block] will mean what the store reports as the result of handling the intent.
      * Use `null` to consider the intent handled. Use the return value of `child.onIntent` to delegate the result.
@@ -106,7 +102,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child's [StorePlugin.onState] method will **not** be invoked
      * unless you manually call [StorePlugin.onState] inside this block.
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onState(old, new) }`
+     * Forward with `child.onState(old, new)`.
      *
      * The return value of [block] will mean what the **state will be set to**, i.e. the end value.
      * Use `null` to not change the state. Use the return value of `child.onState` to delegate the result.
@@ -121,7 +117,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child [StorePlugin.onAction] method will **not** be invoked
      * unless you manually call [StorePlugin.onAction] inside this block.
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onAction(action) }`
+     * Forward with `child.onAction(action)`.
      *
      * The return value of [block] will mean what action will be actually send to subscribers, i.e. the end result.
      * Use `null` to not send anything. Use the return value of `child.onAction` to delegate the result.
@@ -136,7 +132,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child [StorePlugin.onActionDispatch] method will **not** be invoked
      * unless you manually call [StorePlugin.onActionDispatch] inside this block.
      *
-     * For pre-context parameters version, to correctly call the child method: `child.run { onActionDispatch(action) }`
+     * Forward with `child.onActionDispatch(action)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -148,7 +144,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The plugin's [StorePlugin.onException] method will **not** be invoked,
      * unless you manually call [StorePlugin.onException] inside this block!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onException(e) }`
+     * Forward with `child.onException(e)`.
      *
      * The return value of [block] will mean what the store reports as the result of handling the exception.
      * Use `null` to swallow the exception. Use the return value of `child.onException` to delegate the result.
@@ -163,7 +159,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child plugin will not know an event has occurred unless
      * you call the [StorePlugin.onSubscribe] method inside this block manually!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onSubscribe(e) }`
+     * Forward with `child.onSubscribe(count)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -175,7 +171,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child plugin will not know an event has occurred unless
      * you call the [StorePlugin.onUnsubscribe] method inside this block manually!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onUnsubscribe(e) }`
+     * Forward with `child.onUnsubscribe(count)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -188,7 +184,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * you call the [StorePlugin.onStop] method inside this block manually. Be careful of resources not being properly
      * cleaned up!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onStop(e) }`
+     * Forward with `child.onStop(e)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -200,7 +196,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child plugin will not know an event has occurred unless
      * you call the [StorePlugin.onUndeliveredIntent] method inside this block manually!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onUndeliveredIntent(it) }`
+     * Forward with `child.onUndeliveredIntent(intent)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */
@@ -212,7 +208,7 @@ public class DecoratorBuilder<S : MVIState, I : MVIIntent, A : MVIAction> @Publi
      * The child plugin will not know an event has occurred unless
      * you call the [StorePlugin.onUndeliveredAction] method inside this block manually!
      *
-     * For pre-context parameters version, to correctly call the child method, use `child.run { onUndeliveredAction(e) }`
+     * Forward with `child.onUndeliveredAction(action)`.
      *
      * See the [DecoratorBuilder] documentation for details on how this function behaves.
      */

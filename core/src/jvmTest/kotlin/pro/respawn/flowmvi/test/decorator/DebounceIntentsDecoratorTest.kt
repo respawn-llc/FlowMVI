@@ -19,6 +19,7 @@ import kotlin.time.Duration.Companion.ZERO
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalFlowMVIAPI::class)
+@Suppress("CAN_BE_VAL")
 class DebounceIntentsDecoratorTest : FreeSpec({
     configure()
 

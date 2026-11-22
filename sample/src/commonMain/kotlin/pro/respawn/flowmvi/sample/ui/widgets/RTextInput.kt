@@ -31,7 +31,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,7 +67,6 @@ fun RTextInput(
      * Only ONE field per screen should have this as true!
      */
     autoFocus: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
     keyboardActions: KeyboardActions = KeyboardActions.default(),
     focusRequester: FocusRequester = remember { FocusRequester() },
@@ -100,7 +98,6 @@ fun RTextInput(
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             textStyle = textStyle,
-            visualTransformation = visualTransformation,
             label = { LabelWithCounter(lengthRange, label, input.value.length, labelStyle, isFocused) },
             placeholder = placeholder?.let { value ->
                 {

@@ -9,6 +9,7 @@ sealed class TestState {
     data class StateB(val number: Int) : TestState()
 }
 
+@Suppress("CAN_BE_VAL")
 class TypedSaverTest : FreeSpec({
 
     "Given a MapSaver" - {

@@ -1,18 +1,17 @@
 @file:Suppress("MissingPackageDeclaration", "unused", "UndocumentedPublicFunction", "LongMethod", "UnusedImports")
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBinaryMode
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
 fun Project.configureMultiplatform(
     ext: KotlinMultiplatformExtension,
     jvm: Boolean = true,
-    android: Boolean = true,
     linux: Boolean = true,
     iOs: Boolean = true,
     js: Boolean = true,
@@ -43,10 +42,18 @@ fun Project.configureMultiplatform(
 
     if (windows) mingwX64()
 
-    if (js) js(IR) {
+    if (js) js {
         browser()
         nodejs()
         binaries.library()
+        binaries.configureEach {
+            if (mode == KotlinJsBinaryMode.PRODUCTION) {
+                // This flag only affects the JS linker, despite being accepted by the Wasm CLI.
+                linkTask.configure {
+                    compilerOptions.freeCompilerArgs.add("-Xenable-advanced-optimizations")
+                }
+            }
+        }
     }
 
     if (wasmJs) wasmJs {
@@ -60,11 +67,23 @@ fun Project.configureMultiplatform(
     }
 
     if (wasmWasi) wasmWasi {
-        nodejs()
+        wasmtime()
     }
 
-    if (android) androidTarget {
-        publishLibraryVariants("release")
+    targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
+        compileSdk(Config.compileSdk)
+        minSdk = Config.minSdk
+        lint.warning.add("AutoboxingStateCreation")
+        withHostTest {
+            isReturnDefaultValues = true
+        }
+        packaging.resources.excludes.addAll(
+            listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "DebugProbesKt.bin",
+                "META-INF/versions/9/previous-compilation-data.bin",
+            )
+        )
         compilerOptions {
             jvmTarget.set(Config.jvmTarget)
             freeCompilerArgs.addAll(Config.jvmCompilerArgs)
@@ -87,12 +106,10 @@ fun Project.configureMultiplatform(
             yield(macosArm64())
         }
         if (tvOs) {
-            yield(tvosX64())
             yield(tvosArm64())
             yield(tvosSimulatorArm64())
         }
         if (watchOs) {
-            yield(watchosX64())
             yield(watchosArm64())
             yield(watchosDeviceArm64())
             yield(watchosSimulatorArm64())
@@ -101,7 +118,7 @@ fun Project.configureMultiplatform(
 
     sourceSets.apply {
         if (jvm) {
-            val jvmTest by getting {
+            named("jvmTest") {
                 dependencies {
                     implementation(libs.requireLib("kotest-junit"))
                 }

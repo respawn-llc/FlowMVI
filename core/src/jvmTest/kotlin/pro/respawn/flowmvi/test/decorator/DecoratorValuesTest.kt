@@ -36,12 +36,10 @@ class DecoratorValuesTest : FreeSpec({
         "and a decorator that calls the chain and returns the result" - {
             val decorator = testDecorator {
                 onState { chain, old, new ->
-                    chain.run {
-                        old shouldBe TestState.Some
-                        val result = onState(old, new)
-                        result shouldBe SomeData(1)
-                        result
-                    }
+                    old shouldBe TestState.Some
+                    val result = chain.onState(old, new)
+                    result shouldBe SomeData(1)
+                    result
                 }
             }
             "then the final result is the new state" {
@@ -55,7 +53,7 @@ class DecoratorValuesTest : FreeSpec({
             val replacement = SomeData(2)
             val decorator = testDecorator {
                 onState { chain, old, new ->
-                    val _ = chain.run { onState(old, new) }
+                    val _ = chain.onState(old, new)
                     replacement
                 }
             }

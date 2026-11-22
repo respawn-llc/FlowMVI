@@ -62,11 +62,11 @@ fun RTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RTopBar(
+    navigationIcon: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     actions: @Composable (RowScope.() -> Unit) = {},
-    navigationIcon: @Composable () -> Unit,
     title: @Composable () -> Unit,
 ) = CenterAlignedTopAppBar(
     windowInsets = windowInsets,

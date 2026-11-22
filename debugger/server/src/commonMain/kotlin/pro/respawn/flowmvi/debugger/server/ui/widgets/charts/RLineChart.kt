@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -137,59 +138,29 @@ fun <T> RLineChart(
     val baseLine = lines.firstOrNull()?.line ?: return
     val minValue = lines.minOf { it.line.minValue }
     val maxValue = lines.maxOf { it.line.maxValue }
-    val fillEnabled = lines.size == 1
-    val pointCount = baseLine.points.size
 
     val state = remember(animate, *animationKeys) {
         MutableTransitionState(if (animate) 0f else 1f).also { it.targetState = 1f }
     }
     val transition = rememberTransition(state, label = "transition")
+    val animationSpec = tween<Float>(
+        durationMillis = animationDurationMs,
+        delayMillis = animDelayMs,
+        easing = EaseOutCubic,
+    )
 
     val heightFraction by transition.animateFloat(
         label = "height",
-        transitionSpec = {
-            tween(
-                durationMillis = animationDurationMs,
-                delayMillis = animDelayMs,
-                easing = EaseOutCubic,
-            )
-        },
+        transitionSpec = { animationSpec },
         targetValueByState = { it }
     )
     val widthFraction by transition.animateFloat(
         label = "width",
-        transitionSpec = {
-            tween(
-                durationMillis = animationDurationMs,
-                delayMillis = animDelayMs,
-                easing = EaseOutCubic,
-            )
-        },
+        transitionSpec = { animationSpec },
         targetValueByState = { it }
     )
 
-    val cacheSize = remember(xAxis, pointCount, yAxis) {
-        @Suppress("MagicNumber")
-
-        (xAxis?.drawXLabelEvery?.takeIfNotZero()?.let { pointCount / it } ?: 1)
-            .coerceAtLeast(yAxis?.labelAmount ?: 8)
-    }
-    val textMeasurer = rememberTextMeasurer(cacheSize)
-
-    val xLabelsByPoint: List<TextLayoutResult?> = remember(labelTextStyle, xAxis, textMeasurer, baseLine) {
-        if (xAxis == null || xAxis.drawXLabelEvery <= 0) return@remember emptyList()
-        baseLine.points.mapIndexed iteration@{ i, it ->
-            if (i % xAxis.drawXLabelEvery != 0) return@iteration null
-            val text = xAxis.labelFormatter(it, i)
-            textMeasurer.measure(
-                text = text,
-                style = labelTextStyle,
-                overflow = TextOverflow.Ellipsis,
-                softWrap = false,
-                maxLines = 1
-            )
-        }
-    }
+    val xLabelsByPoint = rememberXLabels(baseLine, xAxis, yAxis, labelTextStyle)
 
     val xLabelHeightPx = remember(xLabelsByPoint) {
         xLabelsByPoint.maxOfOrNull { it?.size?.height ?: 0 } ?: 0
@@ -202,32 +173,7 @@ fun <T> RLineChart(
     }
 
     Row(modifier = Modifier.height(Min) then modifier) {
-        // region y axis
-        AnimatedVisibility(yAxis != null && yAxis.labelAmount > 0) {
-            if (yAxis == null || yAxis.labelAmount <= 0) return@AnimatedVisibility
-            val divisor = (yAxis.labelAmount - 1).coerceAtLeast(1)
-            val valueDelta = (maxValue - minValue) / divisor
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = yAxis.alignment,
-                modifier = Modifier
-                    .padding(end = labelPadding, bottom = xLabelHeightDp + labelPadding) // space for x axis
-                    .fillMaxHeight()
-                    .widthIn(max = yAxis.maxWidth),
-            ) {
-                repeat(yAxis.labelAmount) { i ->
-                    val value = maxValue - i * valueDelta
-                    Text(
-                        text = yAxis.labelFormatter(value),
-                        style = labelTextStyle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
-                        textAlign = TextAlign.Start,
-                    )
-                }
-            }
-        } // endregion y axis
+        YAxisLabels(yAxis, minValue, maxValue, labelTextStyle, labelPadding, xLabelHeightDp)
 
         // region chart area
         Canvas(
@@ -269,7 +215,7 @@ fun <T> RLineChart(
             )
             // line
             clipPath(clipPath) {
-                lines.forEachIndexed { index, styled ->
+                lines.forEach { styled ->
                     val path = Path()
                     path.drawLine(
                         line = styled.line,
@@ -298,12 +244,76 @@ fun <T> RLineChart(
                             join = StrokeJoin.Round,
                         ),
                     )
-                    if (fillEnabled && index == 0) drawLineGradient(path, chartLineArea, gradientColors)
+                    if (gradientColors.isNotEmpty()) drawLineGradient(path, chartLineArea, gradientColors)
                 }
             }
         } // endregion chart area
     }
 } // row
+
+@Composable
+private fun <T> rememberXLabels(
+    line: Line<T>,
+    xAxis: XAxis<T>?,
+    yAxis: YAxis?,
+    labelTextStyle: TextStyle,
+): List<TextLayoutResult?> {
+    val pointCount = line.points.size
+    val cacheSize = remember(xAxis, pointCount, yAxis) {
+        @Suppress("MagicNumber")
+        (xAxis?.drawXLabelEvery?.takeIfNotZero()?.let { pointCount / it } ?: 1)
+            .coerceAtLeast(yAxis?.labelAmount ?: 8)
+    }
+    val textMeasurer = rememberTextMeasurer(cacheSize)
+    return remember(labelTextStyle, xAxis, textMeasurer, line) {
+        if (xAxis == null || xAxis.drawXLabelEvery <= 0) return@remember emptyList()
+        line.points.mapIndexed { i, point ->
+            if (i % xAxis.drawXLabelEvery != 0) return@mapIndexed null
+            textMeasurer.measure(
+                text = xAxis.labelFormatter(point, i),
+                style = labelTextStyle,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.YAxisLabels(
+    yAxis: YAxis?,
+    minValue: Float,
+    maxValue: Float,
+    labelTextStyle: TextStyle,
+    labelPadding: Dp,
+    xLabelHeight: Dp,
+) {
+    AnimatedVisibility(yAxis != null && yAxis.labelAmount > 0) {
+        if (yAxis == null || yAxis.labelAmount <= 0) return@AnimatedVisibility
+        val divisor = (yAxis.labelAmount - 1).coerceAtLeast(1)
+        val valueDelta = (maxValue - minValue) / divisor
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = yAxis.alignment,
+            modifier = Modifier
+                .padding(end = labelPadding, bottom = xLabelHeight + labelPadding)
+                .fillMaxHeight()
+                .widthIn(max = yAxis.maxWidth),
+        ) {
+            repeat(yAxis.labelAmount) { i ->
+                Text(
+                    text = yAxis.labelFormatter(maxValue - i * valueDelta),
+                    style = labelTextStyle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = false,
+                    textAlign = TextAlign.Start,
+                )
+            }
+        }
+    }
+}
 
 @Composable
 @Suppress("MagicNumber")

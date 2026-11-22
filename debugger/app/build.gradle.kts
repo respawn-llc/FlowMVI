@@ -11,8 +11,6 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
-
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -28,7 +26,7 @@ kotlin {
 
             implementation(projects.debugger.server)
         }
-        desktopMain.apply {
+        named("desktopMain") {
             dependencies {
                 implementation(libs.kotlin.coroutines.swing)
                 implementation(compose.desktop.currentOs)

@@ -6,6 +6,7 @@
     "MaxLineLength"
 )
 
+import com.android.build.api.dsl.CompileSdkSpec
 import org.gradle.api.JavaVersion
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -49,13 +50,19 @@ object Config {
         "kotlin.contracts.ExperimentalContracts",
     )
     val compilerArgs = listOf(
+        "-Xdont-warn-on-error-suppression",
         "-Xexpect-actual-classes",
         "-Xconsistent-data-class-copy-visibility",
         "-Xwarning-level=NOTHING_TO_INLINE:disabled",
         "-Xwarning-level=UNUSED_ANONYMOUS_PARAMETER:disabled",
+        "-Xcallable-references-to-contextual",
+        "-Xcollection-literals",
+        "-Xcompanion-blocks",
         "-Xcontext-sensitive-resolution",
+        "-Xeager-lambda-analysis",
+        "-Xexplicit-context-arguments",
         "-Xreturn-value-checker=check",
-        // "-Xwhen-guards",
+        "-Xstrict-equality-for-structural-classes",
     )
     val jvmCompilerArgs = buildList {
         add("-jvm-default=enable")
@@ -70,16 +77,16 @@ object Config {
     }
 
     // android
-    const val compileSdk = 36
-    const val targetSdk = compileSdk
+    val compileSdk: CompileSdkSpec.() -> Unit = {
+        version = release(37) { minorApiLevel = 2 }
+    }
+    const val targetSdk = 36
     const val minSdk = 23
     const val appMinSdk = 26
     const val namespace = artifactId
     const val testRunner = "androidx.test.runner.AndroidJUnitRunner"
-    const val isMinifyEnabledRelease = false
     const val isMinifyEnabledDebug = false
     const val defaultProguardFile = "proguard-android-optimize.txt"
-    const val proguardFile = "proguard-rules.pro"
     const val consumerProguardFile = "consumer-rules.pro"
 
     // position reflects the level of stability, order is important

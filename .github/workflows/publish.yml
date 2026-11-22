@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
@@ -50,17 +50,18 @@ jobs:
           echo "keystore_path=$KEYSTORE_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6.3.0
         with:
           distribution: 'zulu'
           check-latest: true
-          java-version: 23
+          java-version: 27
+          problem-matcher: true
           cache: 'gradle'
 
       - name: Validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v5
+        uses: gradle/actions/wrapper-validation@v6.4.1
 
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: maxim-lobanov/setup-xcode@v1.7.0
         with:
           xcode-version: latest
 
@@ -70,7 +71,7 @@ jobs:
         run: echo "$LOCAL_PROPERTIES" | base64 --decode > local.properties
 
       - name: Cache konan directory
-        uses: actions/cache@v5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.konan
           key: ${{ runner.os }}-konan-${{ hashFiles('*.gradle.kts', 'buildSrc/*') }}
@@ -78,7 +79,7 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Assemble android sample
-        run: ./gradlew :sample:assembleRelease
+        run: ./gradlew :sample:androidApp:assembleRelease
 
       - name: Publish to sonatype
         env:
@@ -90,7 +91,7 @@ jobs:
         run: ./gradlew publishToMavenCentral --no-configuration-cache
 
       - name: Generate Changelog
-        uses: mikepenz/release-changelog-builder-action@v6
+        uses: mikepenz/release-changelog-builder-action@v6.5
         id: build_changelog
         with:
           commitMode: true
@@ -102,7 +103,7 @@ jobs:
           CHANGELOG: ${{steps.build_changelog.outputs.changelog}}
 
       - name: Download debugger installers
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: Debugger_*
           path: release-artifacts/debugger
@@ -120,13 +121,13 @@ jobs:
           test "$windows_count" -eq 1
 
       - name: Create GH release
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         id: create_release
         with:
           draft: true
           artifactErrorsFailBuild: true
           prerelease: false
-          artifacts: sample/build/outputs/apk/release/pro.respawn.flowmvi.sample.apk,release-artifacts/debugger/Debugger_MacOS/*.dmg,release-artifacts/debugger/Debugger_Linux/*.deb,release-artifacts/debugger/Debugger_Windows/*.exe
+          artifacts: sample/androidApp/build/outputs/apk/release/pro.respawn.flowmvi.sample.apk,release-artifacts/debugger/Debugger_MacOS/*.dmg,release-artifacts/debugger/Debugger_Linux/*.deb,release-artifacts/debugger/Debugger_Windows/*.exe
           body: ${{steps.build_changelog.outputs.changelog}}
           tag: ${{ inputs.tag != '' && inputs.tag || github.ref_name }}
         env:

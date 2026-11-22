@@ -9,6 +9,7 @@ import pro.respawn.flowmvi.util.TestAction
 import pro.respawn.flowmvi.util.TestIntent
 import pro.respawn.flowmvi.util.TestState
 
+@Suppress("CAN_BE_VAL")
 class RecoverPluginTest : FreeSpec({
     "Given a recover plugin that swallows exceptions" - {
         var recovers = 0

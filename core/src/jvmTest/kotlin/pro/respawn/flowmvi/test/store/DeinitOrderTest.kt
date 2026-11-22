@@ -9,6 +9,7 @@ import pro.respawn.flowmvi.util.configure
 import pro.respawn.flowmvi.util.idle
 import pro.respawn.flowmvi.util.testStore
 
+@Suppress("CAN_BE_VAL")
 class DeinitOrderTest : FreeSpec({
     configure()
     "given store with cache plugin" - {

@@ -58,6 +58,11 @@ Examples: `feat: add state recovery`, `fix: resolve lifecycle conflict`, `feat!:
 
 ## Notes 
 
+- Inline all library functions and use lambdas directly. If Kotlin prevents inlining, ask a maintainer before choosing a different implementation.
+- Before making any public API change, show a maintainer the proposed declarations and their effect on existing callers and implementors. Wait for their explicit approval before editing code. This applies to additions, removals, and changes to stable or experimental APIs. If the proposal changes, obtain approval again.
+- `@InternalFlowMVIAPI` explicitly excludes the annotated API from source, binary, and behavioral compatibility guarantees, including in minor releases. This exception does not extend to stable callers or waive prior human review of public API changes.
+- Do not introduce a library performance regression without explicit maintainer approval. When performance impact is uncertain, measure it before proceeding.
+
 - Document public code via kdocs.
 - Do not run `assemble` on the entire project, that task can take hours, use more granular tasks
 - Avoid source-breaking changes. Deprecate public api instead of removing it.

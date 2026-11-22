@@ -205,6 +205,8 @@ const config: Config = {
                 generateLLMsFullTxt: true,
                 generateMarkdownFiles: true,
                 docsDir: "docs",
+                // Match no HTML routes so Markdown keeps its /docs/ prefix. Write the indexes at the site root.
+                versions: [{ name: "current", path: "", routePrefix: "docs" }],
                 title: "FlowMVI",
                 description: "Architecture Framework for Kotlin. Reuse every line of code. Handle all errors automatically. No boilerplate. Analytics, metrics, debugging in 3 lines. 50+ features.",
                 rootContent: `FlowMVI is a Kotlin Multiplatform MVI (Model-View-Intent) framework built on coroutines.

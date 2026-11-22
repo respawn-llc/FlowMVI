@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.CancellationException
 import pro.respawn.flowmvi.savedstate.api.Saver
 
+@Suppress("CAN_BE_VAL")
 class RecoveringSaverTest : FreeSpec({
 
     "Given a RecoveringSaver" - {
@@ -174,12 +175,10 @@ class RecoveringSaverTest : FreeSpec({
                     var deprecatedRecoverCallCount = 0
 
                     val delegateSaver = object : Saver<String> {
-                        override suspend fun save(state: String?) {
-                            throw testException
-                        }
+                        override suspend fun save(state: String?): Unit = throw testException
                         override suspend fun restore(): String = "restored"
 
-                        @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+                        @Deprecated(RecoverDeprecationMessage)
                         override suspend fun recover(e: Exception): String {
                             deprecatedRecoverCallCount++
                             return deprecatedRecoveryValue
@@ -199,11 +198,9 @@ class RecoveringSaverTest : FreeSpec({
 
                     val delegateSaver = object : Saver<String> {
                         override suspend fun save(state: String?) {}
-                        override suspend fun restore(): String? {
-                            throw testException
-                        }
+                        override suspend fun restore(): String? = throw testException
 
-                        @Suppress("DEPRECATION")
+                        @Deprecated(RecoverDeprecationMessage)
                         override suspend fun recover(e: Exception): String? {
                             deprecatedRecoverCallCount++
                             return deprecatedRecoveryValue
@@ -225,12 +222,10 @@ class RecoveringSaverTest : FreeSpec({
                     var deprecatedRecoverCallCount = 0
 
                     val delegateSaver = object : Saver<String> {
-                        override suspend fun save(state: String?) {
-                            throw testException
-                        }
+                        override suspend fun save(state: String?): Unit = throw testException
                         override suspend fun restore(): String? = "restored"
 
-                        @Suppress("DEPRECATION")
+                        @Deprecated(RecoverDeprecationMessage)
                         override suspend fun recover(e: Exception): String? {
                             deprecatedRecoverCallCount++
                             throw deprecatedException
@@ -253,11 +248,9 @@ class RecoveringSaverTest : FreeSpec({
 
                     val delegateSaver = object : Saver<String> {
                         override suspend fun save(state: String?) {}
-                        override suspend fun restore(): String? {
-                            throw testException
-                        }
+                        override suspend fun restore(): String? = throw testException
 
-                        @Suppress("DEPRECATION")
+                        @Deprecated(RecoverDeprecationMessage)
                         override suspend fun recover(e: Exception): String? {
                             deprecatedRecoverCallCount++
                             throw deprecatedException
@@ -280,14 +273,10 @@ class RecoveringSaverTest : FreeSpec({
                     var deprecatedRecoverCallCount = 0
 
                     val delegateSaver = object : Saver<String> {
-                        override suspend fun save(state: String?) {
-                            throw testException
-                        }
-                        override suspend fun restore(): String? {
-                            throw testException
-                        }
+                        override suspend fun save(state: String?): Unit = throw testException
+                        override suspend fun restore(): String? = throw testException
 
-                        @Suppress("DEPRECATION")
+                        @Deprecated(RecoverDeprecationMessage)
                         override suspend fun recover(e: Exception): String? {
                             deprecatedRecoverCallCount++
                             return "should-not-be-called"

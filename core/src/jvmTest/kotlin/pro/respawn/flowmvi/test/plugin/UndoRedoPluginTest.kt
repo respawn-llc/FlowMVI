@@ -20,6 +20,7 @@ private fun UndoRedo.shouldBeEmpty() {
     index.value shouldBe -1
 }
 
+@Suppress("CAN_BE_VAL")
 class UndoRedoPluginTest : FreeSpec({
     configure()
     "Given undo/redo" - {

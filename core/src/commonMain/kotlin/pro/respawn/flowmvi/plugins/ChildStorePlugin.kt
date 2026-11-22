@@ -9,6 +9,7 @@ import pro.respawn.flowmvi.api.PipelineContext
 import pro.respawn.flowmvi.api.Store
 import pro.respawn.flowmvi.api.StorePlugin
 import pro.respawn.flowmvi.dsl.StoreBuilder
+
 @IgnorableReturnValue
 private suspend fun PipelineContext<*, *, *>.children(
     stores: Iterable<Store<*, *, *>>,

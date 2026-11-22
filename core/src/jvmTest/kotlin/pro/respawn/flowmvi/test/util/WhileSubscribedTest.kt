@@ -29,6 +29,7 @@ private inline fun createCancellableAction(
 }
 
 @OptIn(ExperimentalFlowMVIAPI::class, ExperimentalCoroutinesApi::class)
+@Suppress("CAN_BE_VAL")
 class WhileSubscribedTest : FreeSpec({
     configure()
 

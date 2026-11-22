@@ -28,52 +28,62 @@ internal data class PluginInstance<S : MVIState, I : MVIIntent, A : MVIAction>(
     override val name: String? = null,
 ) : StorePlugin<S, I, A> {
 
-    override suspend fun PipelineContext<S, I, A>.onState(old: S, new: S): S? {
-        return (onState ?: return new).invoke(this, old, new)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onState(old: S, new: S): S? {
+        return (onState ?: return new).invoke(ctx, old, new)
     }
 
     override fun onIntentEnqueue(intent: I): I? {
         return (onIntentEnqueue ?: return intent).invoke(intent)
     }
 
-    override suspend fun PipelineContext<S, I, A>.onIntent(intent: I): I? {
-        return (onIntent ?: return intent).invoke(this, intent)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onIntent(intent: I): I? {
+        return (onIntent ?: return intent).invoke(ctx, intent)
     }
 
-    override suspend fun PipelineContext<S, I, A>.onAction(action: A): A? {
-        return (onAction ?: return action).invoke(this, action)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onAction(action: A): A? {
+        return (onAction ?: return action).invoke(ctx, action)
     }
 
     override fun onActionDispatch(action: A): A? {
         return (onActionDispatch ?: return action).invoke(action)
     }
 
-    override suspend fun PipelineContext<S, I, A>.onException(e: Exception): Exception? {
-        return (onException ?: return e).invoke(this, e)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onException(e: Exception): Exception? {
+        return (onException ?: return e).invoke(ctx, e)
     }
 
-    override suspend fun PipelineContext<S, I, A>.onStart() {
-        onStart?.invoke(this)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onStart() {
+        onStart?.invoke(ctx)
     }
 
-    override suspend fun PipelineContext<S, I, A>.onSubscribe(newSubscriberCount: Int) {
-        onSubscribe?.invoke(this, newSubscriberCount)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onSubscribe(newSubscriberCount: Int) {
+        onSubscribe?.invoke(ctx, newSubscriberCount)
     }
 
-    override suspend fun PipelineContext<S, I, A>.onUnsubscribe(newSubscriberCount: Int) {
-        onUnsubscribe?.invoke(this, newSubscriberCount)
+    context(ctx: PipelineContext<S, I, A>)
+    override suspend fun onUnsubscribe(newSubscriberCount: Int) {
+        onUnsubscribe?.invoke(ctx, newSubscriberCount)
     }
 
-    override fun ShutdownContext<S, I, A>.onStop(e: Exception?) {
-        onStop?.invoke(this, e)
+    context(ctx: ShutdownContext<S, I, A>)
+    override fun onStop(e: Exception?) {
+        onStop?.invoke(ctx, e)
     }
 
-    override fun ShutdownContext<S, I, A>.onUndeliveredIntent(intent: I) {
-        onUndeliveredIntent?.invoke(this, intent)
+    context(ctx: ShutdownContext<S, I, A>)
+    override fun onUndeliveredIntent(intent: I) {
+        onUndeliveredIntent?.invoke(ctx, intent)
     }
 
-    override fun ShutdownContext<S, I, A>.onUndeliveredAction(action: A) {
-        onUndeliveredAction?.invoke(this, action)
+    context(ctx: ShutdownContext<S, I, A>)
+    override fun onUndeliveredAction(action: A) {
+        onUndeliveredAction?.invoke(ctx, action)
     }
 
     override fun toString(): String = "StorePlugin${name?.let { " \"$it\"" }.orEmpty()}"
