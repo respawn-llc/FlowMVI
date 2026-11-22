@@ -144,7 +144,7 @@ compose {
                 targetFormats(TargetFormat.Dmg, TargetFormat.Deb, TargetFormat.Exe)
                 packageName = Config.namespace
                 packageVersion = Config.majorVersionName
-                description = Config.Sample.appDescription
+                description = Config.Sample.appDescription.lineSequence().first()
                 vendor = Config.vendorName
                 licenseFile = rootProject.rootDir.resolve(Config.licenseFile)
                 val iconDir = rootProject.rootDir.resolve("docs").resolve("static")
