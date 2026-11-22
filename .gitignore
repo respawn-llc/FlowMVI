@@ -183,4 +183,5 @@ docs/javadocs/**
 /docs/.npm-cache/
 /.idea/artifacts/
 /.idea/deviceManager.xml
-/.builder/plans/
+/.kent/plans/
+/.idea/doNotAskNotifications.xml

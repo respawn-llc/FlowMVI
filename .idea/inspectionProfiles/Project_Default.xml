@@ -14,8 +14,8 @@
       <option name="composableFile" value="true" />
     </inspection_tool>
     <inspection_tool class="ConstPropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
-    <inspection_tool class="Deprecation" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="IGNORE_INSIDE_DEPRECATED" value="true" />
+    <inspection_tool class="D" enabled="true" level="TEXT ATTRIBUTES" enabled_by_default="true" editorAttributes="CONSIDERATION_ATTRIBUTES">
+      <scope name="Production" level="TEXT ATTRIBUTES" enabled="true" editorAttributes="CONSIDERATION_ATTRIBUTES" />
     </inspection_tool>
     <inspection_tool class="FunctionName" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="namePattern" value="[a-zA-Z][A-Za-z\d]*" />
