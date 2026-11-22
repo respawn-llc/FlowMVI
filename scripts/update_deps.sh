@@ -1,9 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-# needs to be run 2 times to upgrade both the wrapper script and the exec
-./gradlew wrapper --gradle-version=latest
-./gradlew wrapper --gradle-version=latest
+release=$(curl -fsSL https://services.gradle.org/versions/current)
+version=$(jq -er '.version' <<< "$release")
+checksum=$(jq -er '.checksum' <<< "$release")
+# Run again with the new distribution to regenerate the wrapper itself.
+wrapper_args=(wrapper --gradle-version="$version" --gradle-distribution-sha256-sum="$checksum")
+./gradlew "${wrapper_args[@]}"
+./gradlew "${wrapper_args[@]}"
 
 ./gradlew versionCatalogUpdate --no-configuration-cache
 ./gradlew versionCatalogUpdateSample --no-configuration-cache
@@ -12,7 +16,8 @@ cache_dir="$(pwd)/docs/.npm-cache"
 
 (
   cd docs
-  npm_config_cache="$cache_dir" npx npm-check-updates -u
+  # Newer llms plugin versions move public Markdown URLs.
+  npm_config_cache="$cache_dir" npx npm-check-updates -u --reject docusaurus-plugin-llms
   npm_config_cache="$cache_dir" npm install
   npm_config_cache="$cache_dir" npm outdated || true
 )
