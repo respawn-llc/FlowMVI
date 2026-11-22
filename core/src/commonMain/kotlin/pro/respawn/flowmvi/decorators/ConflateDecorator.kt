@@ -12,6 +12,7 @@ import pro.respawn.flowmvi.dsl.StoreBuilder
 
 @PublishedApi
 internal class Conflated<T : Any> {
+
     private val value = atomic<T?>(null)
 
     @IgnorableReturnValue
@@ -38,9 +39,9 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateIntentsDe
         if (prev != null && compare(prev, cur)) return@onIntent null
         chain.onIntent(cur)
     }
-    onStop { child, e ->
+    onStop { chain, e ->
         lastIntent.update(null)
-        child.run { onStop(e) }
+        chain.onStop(e)
     }
 }
 
@@ -62,11 +63,11 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> conflateActionsDe
     onAction { chain, cur ->
         val prev = lastAction.update(cur)
         if (prev != null && compare(prev, cur)) return@onAction null
-        with(chain) { onAction(cur) }
+        chain.onAction(cur)
     }
-    onStop { child, e ->
+    onStop { chain, e ->
         lastAction.update(null)
-        child.run { onStop(e) }
+        chain.onStop(e)
     }
 }
 

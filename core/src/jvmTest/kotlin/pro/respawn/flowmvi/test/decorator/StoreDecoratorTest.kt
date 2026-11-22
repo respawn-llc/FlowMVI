@@ -6,6 +6,7 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import pro.respawn.flowmvi.decorator.decoratedWith
 import pro.respawn.flowmvi.decorator.decorates
+import pro.respawn.flowmvi.decorator.decorator
 import pro.respawn.flowmvi.dsl.plugin
 import pro.respawn.flowmvi.plugins.timeTravelPlugin
 import pro.respawn.flowmvi.test.plugin.test
@@ -40,7 +41,7 @@ class StoreDecoratorTest : FreeSpec({
             var invocations = 0
             val decorator = testDecorator {
                 onStart { chain ->
-                    chain.run { onStart() }
+                    chain.onStart()
                     ++invocations
                 }
             }
@@ -56,13 +57,13 @@ class StoreDecoratorTest : FreeSpec({
         val invocations = mutableListOf<Int>()
         val decorator1 = testDecorator {
             onStart { chain ->
-                chain.run { onStart() }
+                chain.onStart()
                 invocations += 1
             }
         }
         val decorator2 = testDecorator {
             onStart { chain ->
-                chain.run { onStart() }
+                chain.onStart()
                 invocations += 2
             }
         }
@@ -79,7 +80,7 @@ class StoreDecoratorTest : FreeSpec({
         beforeEach { invocations.clear() }
         val decorator1 = testDecorator {
             onStart { chain ->
-                chain.run { onStart() }
+                chain.onStart()
                 invocations += 1
             }
         }
@@ -103,15 +104,15 @@ class StoreDecoratorTest : FreeSpec({
     }
     "given a decorator with all callbacks defined" - {
         val decorator = testDecorator {
-            onStart { it.run { onStart() } }
-            onIntentEnqueue { chain, intent -> chain.run { onIntentEnqueue(intent) } }
-            onIntent { chain, it -> chain.run { onIntent(it) } }
-            onException { chain, it -> chain.run { onException(it) } }
-            onState { chain, old, new -> chain.run { onState(old, new) } }
-            onAction { chain, it -> chain.run { onAction(it) } }
-            onActionDispatch { chain, action -> chain.run { onActionDispatch(action) } }
-            onSubscribe { chain, it -> chain.run { onSubscribe(it) } }
-            onUnsubscribe { chain, it -> chain.run { onUnsubscribe(it) } }
+            onStart { it.onStart() }
+            onIntentEnqueue { chain, intent -> chain.onIntentEnqueue(intent) }
+            onIntent { chain, it -> chain.onIntent(it) }
+            onException { chain, it -> chain.onException(it) }
+            onState { chain, old, new -> chain.onState(old, new) }
+            onAction { chain, it -> chain.onAction(it) }
+            onActionDispatch { chain, action -> chain.onActionDispatch(action) }
+            onSubscribe { chain, it -> chain.onSubscribe(it) }
+            onUnsubscribe { chain, it -> chain.onUnsubscribe(it) }
         }
         "then all callbacks are invoked" {
             (timeTravelPlugin decoratedWith decorator).test(TestState.Some) {
@@ -141,7 +142,7 @@ class StoreDecoratorTest : FreeSpec({
         val decorator = testDecorator {
             onIntentEnqueue { chain, intent ->
                 calls += "decorator:$intent"
-                chain.run { onIntentEnqueue(intent) }
+                chain.onIntentEnqueue(intent)
             }
         }
         "then decorator invokes child" {
@@ -163,7 +164,7 @@ class StoreDecoratorTest : FreeSpec({
         val decorator = testDecorator {
             onActionDispatch { chain, action ->
                 calls += "decorator:$action"
-                chain.run { onActionDispatch(action) }
+                chain.onActionDispatch(action)
             }
         }
         "then decorator invokes child" {

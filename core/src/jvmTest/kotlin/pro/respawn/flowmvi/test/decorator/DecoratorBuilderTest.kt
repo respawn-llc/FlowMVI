@@ -19,7 +19,7 @@ class DecoratorBuilderTest : FreeSpec({
             "then decorator builds successfully" {
                 shouldNotThrowAny {
                     val _ = decorator<TestState, TestIntent, TestAction> {
-                        onStart { child -> child.run { onStart() } }
+                        onStart { child -> child.onStart() }
                         onIntent { _, intent -> intent }
                         onState { _, old, _ -> old }
                     }
@@ -60,7 +60,7 @@ class DecoratorBuilderTest : FreeSpec({
             "then builder throws" {
                 shouldThrowExactly<IllegalArgumentException> {
                     decorator<TestState, TestIntent, TestAction> {
-                        onStop { child, _ -> child.run { onStop(null) } }
+                        onStop { child, _ -> child.onStop(null) }
                         onStop { _, _ -> }
                     }
                 }

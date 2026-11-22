@@ -30,7 +30,7 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> intentTimeoutDecorator(
     this.name = name
     onIntent { chain, intent ->
         val outcome = withTimeoutOrNull(timeout) {
-            with(chain) { onIntent(intent) } to true
+            chain.onIntent(intent) to true
         } ?: return@onIntent onTimeout(intent)
         outcome.first
     }

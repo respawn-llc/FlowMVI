@@ -18,8 +18,10 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.ZERO
 
 private class JobHandle {
+
     var job by atomic<Job?>(null)
         private set
+
     inline fun set(job: Job?) {
         this.job = job
     }
@@ -56,14 +58,14 @@ public fun <S : MVIState, I : MVIIntent, A : MVIAction> debounceIntentsDecorator
         if (duration <= ZERO) return@onIntent with(chain) { onIntent(intent) }
         val job = launch {
             delay(duration)
-            with(chain) { onIntent(intent) }
+            chain.onIntent(intent)
         }
         handle.set(job)
         null
     }
-    onStop { child, e ->
+    onStop { chain, e ->
         handle.set(null)
-        child.run { onStop(e) }
+        chain.onStop(e)
     }
 }
 

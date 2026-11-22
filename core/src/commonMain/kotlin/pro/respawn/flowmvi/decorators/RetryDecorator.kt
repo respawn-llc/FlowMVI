@@ -36,6 +36,7 @@ public data class RetryStrategy private constructor(
     val base: Double,
     val delayInitially: Boolean,
 ) {
+
     internal fun shouldRetry(attempt: Int) = attempt <= retries
     internal fun delay(attempt: Int) = when {
         attempt == FirstAttempt && !delayInitially -> Duration.ZERO
@@ -56,6 +57,7 @@ public data class RetryStrategy private constructor(
      *  Defaults
      */
     public companion object {
+
         @PublishedApi
         internal const val FirstAttempt: Int = 1
 
@@ -127,11 +129,9 @@ public inline fun <S : MVIState, I : MVIIntent, A : MVIAction> retryIntentsDecor
 ): PluginDecorator<S, I, A> = decorator {
     this.name = name
     onIntent { chain, intent ->
-        with(chain) {
-            retryRecursive(strategy, { selector(intent, it) }) { i ->
-                if (i > RetryStrategy.FirstAttempt) config.logger.warn { "Retry attempt #$i for $intent" }
-                onIntent(intent)
-            }
+        retryRecursive(strategy, { selector(intent, it) }) { i ->
+            if (i > RetryStrategy.FirstAttempt) config.logger.warn { "Retry attempt #$i for $intent" }
+            chain.onIntent(intent)
         }
     }
 }
