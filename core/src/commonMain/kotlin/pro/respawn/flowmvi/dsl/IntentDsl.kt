@@ -10,6 +10,14 @@ import pro.respawn.flowmvi.api.MVIIntent
 
 // ----- intents -----
 
+/** Sends this intent via [IntentReceiver.intent]. */
+context(receiver: IntentReceiver<I>)
+public fun <I : MVIIntent> I.send(): Unit = receiver.intent(this)
+
+/** Emits this intent via [IntentReceiver.emit]. */
+context(receiver: IntentReceiver<I>)
+public suspend fun <I : MVIIntent> I.emit(): Unit = receiver.emit(this)
+
 /**
  * Alias for [IntentReceiver.intent] for multiple intents
  *
@@ -47,6 +55,14 @@ public inline fun <I : MVIIntent> IntentReceiver<I>.send(
 ): Unit = intent(first, other = other)
 
 // ----- actions  -----
+
+/** Sends this action via [ActionReceiver.action]. */
+context(receiver: ActionReceiver<A>)
+public suspend fun <A : MVIAction> A.send(): Unit = receiver.action(this)
+
+/** Emits this action via [ActionReceiver.action]. */
+context(receiver: ActionReceiver<A>)
+public suspend fun <A : MVIAction> A.emit(): Unit = receiver.action(this)
 
 /**
  * Alias for [ActionReceiver.action] for multiple actions
